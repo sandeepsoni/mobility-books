@@ -142,6 +142,7 @@ def mark_start_and_end (annotations, window_size):
 def readArgs ():
 	parser = argparse.ArgumentParser (description="Prepare training data for the model")
 	parser.add_argument ("--annotations-file", type=str, required=True, help="The annotations file contains all the annotations")
+	parser.add_argument ("--pickle-file", type=str, required=True, help="The pickle file contains all the annotations for fast loading")
 	args = parser.parse_args ()
 	return args
 
@@ -153,6 +154,9 @@ def main (args):
 	for window_size in [10, 50, 100]:
 		new_annotations[window_size] = mark_start_and_end (annotations, window_size=window_size)
 		logging.info (f"No. of annotations which could be sanitized: {len (new_annotations[window_size])}")
+
+	with open (args.pickle_file, "wb") as fout:
+		pickle.dump (new_annotations, fout)
 
 if __name__ == "__main__":
 	main (readArgs())
