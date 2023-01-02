@@ -32,6 +32,7 @@ class SpatialRelationPrediction (nn.Module):
 		self.cross_entropy=nn.CrossEntropyLoss()
 		self.overall_loss = 0.0
 		self.num_epochs = 0
+		self.binary = (self.n_labels == 2)
 
 	def __wordpiece_boundaries__ (self, 
 								  tokens, 
@@ -138,6 +139,16 @@ class SpatialRelationPrediction (nn.Module):
                             "BAD LOC",
                             "BAD PER",
                             "UNCERTAIN ASSERTION"]
+		
+		self.spatial_labels = [ "NO RELATIONSHIP ASSERTED",
+								"TOWARD(got there)",
+								"FROM",
+								"NEAR",
+								"IN",
+								"NEGATIVE ASSERTION",
+								"THROUGH",
+								"TOWARD (uncertain got there)",
+								"UNCERTAIN ASSERTION"]
         
 		self.bad_labels = [ "BAD LOC",
                             "BAD PER"]
@@ -152,6 +163,9 @@ class SpatialRelationPrediction (nn.Module):
 		self.full_df = self.full_df[self.full_df["Spatial Relation"] != ""]
 		self.full_df = self.full_df[self.full_df["Spatial Relation"].isin (self.all_labels)]
 		self.full_df["Spatial SuperRelation"] = self.full_df["Spatial Relation"].isin (self.bad_labels)
+
+		if not self.binary:
+			self.full_df = self.full_df[self.full_df["Spatial Relation"].isin (self.spatial_labels)]
 
 		self.train_df, self.test_df = train_test_split(self.full_df, 
 													   test_size=1-training_frac, 
@@ -181,7 +195,7 @@ class SpatialRelationPrediction (nn.Module):
 			for i in tqdm (range (len (self.train_df))):
 				# get the extracted quantities
 				text = self.train_df[context_field].iloc[i]
-				label = self.label_names[int (self.train_df["Spatial SuperRelation"].iloc[i])]
+				label = self.label_names[int (self.train_df["Spatial SuperRelation"].iloc[i])] if self.binary else self.train_df["Spatial Relation"].iloc[i]
 				tokens = text.split (" ")
 				index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = self.__preprocess__ (tokens, 
 																									 self.train_df.iloc[i]["persons_start"],
@@ -198,7 +212,7 @@ class SpatialRelationPrediction (nn.Module):
 									   loc_wp_start,
 									   loc_wp_end)
                 
-				y_truth = self.accepted_labels.index (label)
+				y_truth = self.accepted_labels.index (label) if self.binary else self.spatial_labels.index (label)
 				loss = self.cross_entropy (y_pred.unsqueeze (0), torch.tensor ([y_truth]).to(self.device))
 				self.optimizer.zero_grad ()
 				self.overall_loss += loss.item()
@@ -213,7 +227,7 @@ class SpatialRelationPrediction (nn.Module):
 				with torch.no_grad ():
 					for i in tqdm (range (len (self.test_df))):
 						text = self.test_df[context_field].iloc[i]
-						label = self.label_names[int (self.test_df["Spatial SuperRelation"].iloc[i])]
+						label = self.label_names[int (self.test_df["Spatial SuperRelation"].iloc[i])] if self.binary else self.test_df["Spatial Relation"].iloc[i]
 						tokens = text.split (" ")
 						index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = self.__preprocess__ (tokens, 
 																											 self.test_df.iloc[i]["persons_start"],
@@ -229,7 +243,7 @@ class SpatialRelationPrediction (nn.Module):
 											   per_wp_start, per_wp_end,
 											   loc_wp_start, loc_wp_end)
             
-						y_truth = self.accepted_labels.index (label)
+						y_truth = self.accepted_labels.index (label) if self.binary else self.spatial_labels.index (label)
 						groundtruth.append (y_truth)
 						predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
 
@@ -252,19 +266,20 @@ def readArgs ():
 	parser.add_argument ("--num-epochs", required=False, default=10, type=int, help="Number of epochs for training")
 	parser.add_argument ("--context-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
 	parser.add_argument ("--model-path", required=True, type=str, help="Path to the file that will store the model")
+	parser.add_argument ("--num-labels", required=False, type=int, default=2, help="The number of labels in the spatial relation prediction task")
 	args = parser.parse_args ()
 	return args
 
 def main (args):
 	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-	srp_binary  = SpatialRelationPrediction (model_name=args.pretrained_model_name,
-											 bert_dims=768, 
-											 n_labels=2,
-											 device=device,
-											 lr=1e-5)
-	srp_binary.load_training_data (args.training_data_file)
-	srp_binary.start_training (num_epochs=args.num_epochs, context_field=args.context_field, verbose=True)
-	srp_binary.save_model (args.model_path)
+	srp  = SpatialRelationPrediction (model_name=args.pretrained_model_name,
+									  bert_dims=768, 
+									  n_labels=args.num_labels,
+									  device=device,
+									  lr=1e-5)
+	srp.load_training_data (args.training_data_file)
+	srp.start_training (num_epochs=args.num_epochs, context_field=args.context_field, verbose=True)
+	srp.save_model (args.model_path)
 
 if __name__ == "__main__":
 	main (readArgs ())
