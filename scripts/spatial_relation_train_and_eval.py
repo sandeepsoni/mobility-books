@@ -21,7 +21,7 @@ def main (args):
 									  bert_dims=768, 
 									  n_labels=args.num_labels,
 									  device=device,
-									  lr=1e-5)
+									  lr=1e-6)
 	srp.load_training_data (args.training_data_file)
 	srp.start_training (num_epochs=args.num_epochs, context_field=args.context_field, verbose=True)
 	srp.save_model (args.model_path)

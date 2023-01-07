@@ -76,6 +76,8 @@ class SpatialRelationPrediction (nn.Module):
         # We'll find the start and the end wordpiece for both the person and location entities
 		per_wp_start, per_wp_end = self.__wordpiece_boundaries__ (tokens, per_entity_start, per_entity_end)
 		loc_wp_start, loc_wp_end = self.__wordpiece_boundaries__ (tokens, loc_entity_start, loc_entity_end)
+
+		print ("In preprocess", per_entity_start, per_entity_end, loc_entity_start, loc_entity_end, per_wp_start, per_wp_end, loc_wp_start, loc_wp_end)
         
 		# We'll restrict reading up to end of sentence after the last entity
 		end = max (per_entity_end, loc_entity_end)
@@ -249,6 +251,44 @@ class SpatialRelationPrediction (nn.Module):
 						
 			
 
+	def evaluate_book (self, 
+					   book_df,
+					   context_field="context_100",
+					   max_model_length=512):
+		self.eval()
+		predictions = list ()
+		with torch.no_grad ():
+			for i in range (len (book_df)):
+				text = book_df[context_field].iloc[i]
+				tokens = text.split (" ")
+				index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = self.__preprocess__ (tokens, 
+																									 book_df.iloc[i]["persons_start"],
+																									 book_df.iloc[i]["persons_end"],
+																									 book_df.iloc[i]["locations_start"], 
+																									 book_df.iloc[i]["locations_end"])
+					
+				#print (book_df.iloc[i]["persons_start"],
+				#	   book_df.iloc[i]["persons_end"],
+				#	   book_df.iloc[i]["locations_start"], 
+				#	   book_df.iloc[i]["locations_end"])
+
+				#print (per_wp_start, per_wp_end, loc_wp_start, loc_wp_end)
+
+				encoded_input = self.tokenizer (" ".join (tokens[0:index+1]), return_tensors="pt")
+				if len(encoded_input['input_ids'][0]) > max_model_length:
+					continue
+
+				y_pred = self.forward (encoded_input, 
+									   per_wp_start, per_wp_end,
+									   loc_wp_start, loc_wp_end)
+
+				#print (torch.nn.functional.softmax (y_pred))
+            
+				predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
+
+		return predictions
+				
+				
 	def save_model (self, model_path):
 		torch.save({
 			'epoch': self.num_epochs,
