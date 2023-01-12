@@ -115,6 +115,7 @@ def mark_start_and_end (frame, window_size):
 		rows.append ([per_text, 
 					  loc_text, 
 					  frame.iloc[i][f"context_{window_size}"],
+                                          frame.iloc[i][f"persons_coref"],
 					  per_start, 
 					  per_end, 
 					  loc_start, 
@@ -124,6 +125,7 @@ def mark_start_and_end (frame, window_size):
 						 columns=["persons_text",
                                  "locations_text",
                                  f"context_{window_size}",
+                                 "persons_coref",
                                  "persons_start",
                                  "persons_end",
                                  "locations_start",
@@ -176,8 +178,8 @@ def main (args):
 
     output_df = pd.DataFrame (output)
     output_df.to_csv (os.path.join (args.output_dir, f"{args.book_id}.collocations"), sep="\t", index=False, header=True)
-	output_df = mark_start_and_end (output_df, window_size=args.context_window_size)
-	output_df.to_csv (os.path.join (args.output_dir, f"{args.book_id}.examples"), sep="\t", index=False, header=True)
+    output_df = mark_start_and_end (output_df, window_size=args.context_window_size)
+    output_df.to_csv (os.path.join (args.output_dir, f"{args.book_id}.examples"), sep="\t", index=False, header=True)
 
 if __name__ == "__main__":
 	main (readArgs ())
