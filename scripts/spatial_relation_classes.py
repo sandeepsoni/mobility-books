@@ -223,6 +223,52 @@ class TempRelationPrediction (nn.Module):
 
 				if verbose: print (classification_report (groundtruth, predictions))
 
+	def evaluate_book (self, 
+					   book_df,
+					   context_field="context_100",
+					   max_model_length=512):
+		self.eval()
+		predictions = list ()
+		with torch.no_grad ():
+			for i in range (len (book_df)):
+				text = book_df[context_field].iloc[i]
+				tokens = text.split (" ")
+				index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = self.__preprocess__ (tokens, 
+																									 book_df.iloc[i]["persons_start"],
+																									 book_df.iloc[i]["persons_end"],
+																									 book_df.iloc[i]["locations_start"], 
+																									 book_df.iloc[i]["locations_end"])
+					
+				#print (book_df.iloc[i]["persons_start"],
+				#	   book_df.iloc[i]["persons_end"],
+				#	   book_df.iloc[i]["locations_start"], 
+				#	   book_df.iloc[i]["locations_end"])
+
+				#print (per_wp_start, per_wp_end, loc_wp_start, loc_wp_end)
+
+				encoded_input = self.tokenizer (" ".join (tokens[0:index+1]), return_tensors="pt")
+				if len(encoded_input['input_ids'][0]) > max_model_length:
+					continue
+
+				y_pred = self.forward (encoded_input, 
+									   per_wp_start, per_wp_end,
+									   loc_wp_start, loc_wp_end)
+
+				#print (torch.nn.functional.softmax (y_pred))
+            
+				predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
+
+		return predictions
+				
+				
+	def save_model (self, model_path):
+		torch.save({
+			'epoch': self.num_epochs,
+			'model_state_dict': self.state_dict(),
+			'optimizer_state_dict': self.optimizer.state_dict(),
+			'loss': self.overall_loss/len(self.train_df),
+			}, model_path)
+
 class SpatialRelationPrediction (nn.Module):
 	def __init__ (self, 
 				  model_name="bert-base-cased", 
