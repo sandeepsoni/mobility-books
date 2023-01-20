@@ -10,6 +10,7 @@ def readArgs ():
 	parser.add_argument ("--training-data-file", required=True, type=str, help="Training data is in this pickle file")
 	parser.add_argument ("--num-epochs", required=False, default=10, type=int, help="Number of epochs for training")
 	parser.add_argument ("--context-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
+        parser.add_argument ("--depvar-field", required=False, default="Spatial Relation", type=str, help="Column name that points at the dependent variable field")
 	parser.add_argument ("--model-path", required=True, type=str, help="Path to the file that will store the model")
 	parser.add_argument ("--num-labels", required=False, type=int, default=2, help="The number of labels in the spatial relation prediction task")
 	args = parser.parse_args ()
