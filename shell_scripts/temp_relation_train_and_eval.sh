@@ -1,0 +1,3 @@
+python ../scripts/temp_relation_train_and_eval.py --pretrained-model-name bert-base-cased --training-data-file ../data/annotations/final_annotations/final_annotations.v1.pickle --num-epochs 15 --context-field context_100 --depvar-field "Temporal Span" --model-path ../data/experiments/temporal_span/model_checkpoints/trained.v1.pt --num-labels 2
+
+python ../scripts/temp_relation_train_and_eval.py --pretrained-model-name bert-base-cased --training-data-file ../data/annotations/final_annotations/final_annotations.v1.pickle --num-epochs 15 --context-field context_100 --depvar-field "Narrative Tense" --model-path ../data/experiments/narrative_tense/model_checkpoints/trained.v1.pt --num-labels 2
