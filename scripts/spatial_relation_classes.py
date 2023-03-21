@@ -374,6 +374,7 @@ class SpatialRelationPrediction (nn.Module):
 	def load_training_data  (self, 
 							 filepath, 
 							 window_size=100,
+							 test_ids_file="",
 							 training_frac=0.8):
 		""" Load training data from filepath.
         
@@ -381,6 +382,7 @@ class SpatialRelationPrediction (nn.Module):
 		window_size (int): Select the window size to index (default: 100); can be one of 10, 50, 100.
 		training_frac (float): The proportion of examples used for training and the rest for evaluation;
                                0  < training_frac < 1.0 (default: 0.8)
+		test_ids_file (str): The path of the .txt file that contains the test ids.
         
 		The side effect of this function is the creation of object attributes like 
         
@@ -424,9 +426,15 @@ class SpatialRelationPrediction (nn.Module):
 		if not self.binary:
 			self.full_df = self.full_df[self.full_df["Spatial Relation"].isin (self.spatial_labels)]
 
-		self.train_df, self.test_df = train_test_split(self.full_df, 
-													   test_size=1-training_frac, 
-													   random_state=96)
+		if test_ids_file == "":
+			self.train_df, self.test_df = train_test_split(self.full_df, 
+						  								   test_size=1-training_frac, 
+														   random_state=96)
+		else:
+			with open (test_ids_file) as fin:
+				test_ids = [line for line in fin]
+			self.train_df = self.full_df[~self.full_df["ID"].isin (test_ids)]
+			self.test_df = self.full_df[self.full_df["ID"].isin (test_ids)]
 
 	def start_training (self, 
 						num_epochs=10, 

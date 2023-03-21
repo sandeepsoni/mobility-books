@@ -1,3 +1,6 @@
+"""
+Wrapper script to train a model for spatial relation prediction. 
+"""
 import argparse
 import torch
 torch.manual_seed (96)
@@ -8,6 +11,8 @@ def readArgs ():
 	parser = argparse.ArgumentParser (description="Script to train and evaluate a spatial relation prediction model")
 	parser.add_argument ("--pretrained-model-name", required=True, type=str, help="Name of the pretrained model")
 	parser.add_argument ("--training-data-file", required=True, type=str, help="Training data is in this pickle file")
+	parser.add_argument ("--test-ids-file", required=False, default="", type=str, required="Test file contains IDS on which we want to test")
+	parser.add_argument ("--training-frac", required=False, default=0.8, type=float, help="Training fraction")
 	parser.add_argument ("--num-epochs", required=False, default=10, type=int, help="Number of epochs for training")
 	parser.add_argument ("--context-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
 	parser.add_argument ("--model-path", required=True, type=str, help="Path to the file that will store the model")
@@ -22,7 +27,10 @@ def main (args):
 									  n_labels=args.num_labels,
 									  device=device,
 									  lr=1e-6)
-	srp.load_training_data (args.training_data_file)
+	if args.test_ids_file == "":
+		srp.load_training_data (args.training_data_file, training_frac=args.training_frac)
+	else:
+		srp.load_training_data (args.training_data_file, test_ids_file=args.test_ids_file)
 	srp.start_training (num_epochs=args.num_epochs, context_field=args.context_field, verbose=True)
 	srp.save_model (args.model_path)
 
