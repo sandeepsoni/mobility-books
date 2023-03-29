@@ -19,7 +19,6 @@ BAD_LABELS = [
 
 SPATIAL_LABELS = list (set (ALL_LABELS) - set (BAD_LABELS))
 
-VALID_LABELS = {
-    1: "VALID",
-    0: "INVALID"
-}
+VALID_LABELS = ["INVALID", "VALID"]
+VALID_LABELS_IDX = {i:label for label in enumerate (VALID_LABELS)}
+VALID_LABELS_IIDX = {label: i for label in enumerate (VALID_LABELS)}

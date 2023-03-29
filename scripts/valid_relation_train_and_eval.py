@@ -12,14 +12,13 @@ if os.path.abspath ("../") not in sys.path:
     sys.path.append (os.path.abspath ("../"))
 
 from modules.relation_prediction import BERTRelationPrediction
-from modules.relation_prediction_constants import ALL_LABELS, SPATIAL_LABELS, BAD_LABELS, VALID_LABELS
+from modules.relation_prediction_constants import SPATIAL_LABELS, VALID_LABELS
 
 def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
-    labels = kwargs.get ("labels", ALL_LABELS)
     full_df = annotations[kwargs.get ("window_size", 10)]
     full_df = full_df.query ("`Spatial Relation` != ''")
     full_df = full_df.query ("`Spatial Relation` in @labels")
-    full_df.loc[:,kwargs.get("label_field", "Valid Relation")] = full_df.apply (lambda x: VALID_LABELS[int(x["Spatial Relation"] in SPATIAL_LABELS)], axis=1)
+    full_df.loc[:,kwargs.get("label_field", "Valid Relation")] = full_df.apply (lambda x: VALID_LABELS.index(int(x["Spatial Relation"] in SPATIAL_LABELS)), axis=1)
 
     test_ids_file = kwargs.get ("test_ids_file", "")
 
@@ -56,7 +55,8 @@ def main (args):
                                         dims=768,
                                         n_labels=args.num_labels,
                                         device=device,
-                                        lr=1e-6)
+                                        lr=1e-6,
+                                        labels=VALID_LABELS)
     predictor.load_data (args.annotated_data_file, 
                          preprocess=preprocess_valid_relation_prediction, 
                          test_ids_file=args.test_ids_file, 
