@@ -6,8 +6,13 @@ import torch
 torch.manual_seed (96)
 
 from sklearn.model_selection import train_test_split
-from ..modules.relation_prediction import BERTRelationPrediction
-from ..modules.relation_prediction_constants import ALL_LABELS, SPATIAL_LABELS, BAD_LABELS, VALID_LABELS
+import sys, os
+
+if os.path.abspath ("../") not in sys.path:
+    sys.path.append (os.path.abspath ("../"))
+
+from modules.relation_prediction import BERTRelationPrediction
+from modules.relation_prediction_constants import ALL_LABELS, SPATIAL_LABELS, BAD_LABELS, VALID_LABELS
 
 def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
     labels = kwargs.get ("labels", ALL_LABELS)
@@ -34,7 +39,7 @@ def readArgs ():
     parser = argparse.ArgumentParser (description="Script to train and evaluate a spatial relation prediction model")
     parser.add_argument ("--pretrained-model-name", required=True, type=str, help="Name of the pretrained model")
     parser.add_argument ("--annotated-data-file", required=True, type=str, help="Annotated data is in this pickle file")
-    parser.add_argument ("--test-ids-file", required=False, default="", type=str, required="Test file contains IDS on which we want to test")
+    parser.add_argument ("--test-ids-file", required=False, default="", type=str, help="Test file contains IDS on which we want to test")
     parser.add_argument ("--training-frac", required=False, default=0.8, type=float, help="Training fraction")
     parser.add_argument ("--num-epochs", required=False, default=10, type=int, help="Number of epochs for training")
     parser.add_argument ("--context-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
