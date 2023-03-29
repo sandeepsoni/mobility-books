@@ -1,6 +1,6 @@
 python ../scripts/valid_relation_train_and_eval.py \
        --pretrained-model-name bert-base-cased \
-       --training-data-file ../data/annotations/final_annotations/final_annotations.v1.pickle \
+       --annotated-data-file ../data/annotations/final_annotations/final_annotations.v1.pickle \
        --num-epochs 15 \
        --text-field context_100 \
        --label-field 'Valid Relation' \
