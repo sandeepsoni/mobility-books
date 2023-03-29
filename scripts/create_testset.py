@@ -1,3 +1,5 @@
+""" Extract examples for a set of Project Gutenberg books.
+"""
 import argparse
 import os
 import glob
