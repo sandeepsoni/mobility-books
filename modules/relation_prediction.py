@@ -110,7 +110,7 @@ class BERTRelationPrediction (nn.Module):
             self.optimizer.zero_grad ()
             self.overall_loss += loss.item ()
             loss.backward ()
-            self.optiizer.step ()
+            self.optimizer.step ()
         return self.overall_loss/len (self.train_df)
 	
     def __eval__ (self, 
