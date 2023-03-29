@@ -12,9 +12,10 @@ if os.path.abspath ("../") not in sys.path:
     sys.path.append (os.path.abspath ("../"))
 
 from modules.relation_prediction import BERTRelationPrediction
-from modules.relation_prediction_constants import SPATIAL_LABELS, VALID_LABELS
+from modules.relation_prediction_constants import ALL_LABELS, SPATIAL_LABELS, VALID_LABELS
 
 def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
+    labels = kwargs.get ("labels", ALL_LABELS)
     full_df = annotations[kwargs.get ("window_size", 10)]
     full_df = full_df.query ("`Spatial Relation` != ''")
     full_df = full_df.query ("`Spatial Relation` in @labels")
