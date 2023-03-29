@@ -19,7 +19,7 @@ def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
     full_df = annotations[kwargs.get ("window_size", 10)]
     full_df = full_df.query ("`Spatial Relation` != ''")
     full_df = full_df.query ("`Spatial Relation` in @labels")
-    full_df.loc[:,kwargs.get("label_field", "Valid Relation")] = full_df["Spatial Relation"].apply (lambda x: VALID_LABELS[int(x in SPATIAL_LABELS)], axis=1)
+    full_df.loc[:,kwargs.get("label_field", "Valid Relation")] = full_df.apply (lambda x: VALID_LABELS[int(x["Spatial Relation"] in SPATIAL_LABELS)], axis=1)
 
     test_ids_file = kwargs.get ("test_ids_file", "")
 
