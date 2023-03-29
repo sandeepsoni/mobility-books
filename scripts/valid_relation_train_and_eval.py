@@ -42,6 +42,7 @@ def readArgs ():
     parser.add_argument ("--test-ids-file", required=False, default="", type=str, help="Test file contains IDS on which we want to test")
     parser.add_argument ("--training-frac", required=False, default=0.8, type=float, help="Training fraction")
     parser.add_argument ("--num-epochs", required=False, default=10, type=int, help="Number of epochs for training")
+    parser.add_argument ("--window-size", required=False, default=100, type=int, help="Specify the size of the window in number of tokens")
     parser.add_argument ("--text-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
     parser.add_argument ("--label-field", required=False, default="Valid Relation", type=str, help="Column that contains the label")
     parser.add_argument ("--model-path", required=True, type=str, help="Path to the file that will store the model")
@@ -60,7 +61,8 @@ def main (args):
                          preprocess=preprocess_valid_relation_prediction, 
                          test_ids_file=args.test_ids_file, 
                          training_frac=args.training_frac,
-                         label_field=args.label_field)
+                         label_field=args.label_field,
+                         window_size=args.window_size)
 	
     predictor.start_training (num_epochs=args.num_epochs, 
                               text_field=args.text_field,
