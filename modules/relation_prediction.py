@@ -74,7 +74,7 @@ class BERTRelationPrediction (nn.Module):
 		"""
         with open (filepath, "rb") as fin:
             annotations = pickle.load (fin)
-        self.full_df, self.train_df, self.test_df = kwargs["preprocess"] (annotations, args, kwargs)
+        self.full_df, self.train_df, self.test_df = kwargs["preprocess"] (annotations, *args, **kwargs)
 	
     def __train__ (self, 
                    text_field="context_100",
