@@ -153,13 +153,13 @@ class BERTRelationPrediction (nn.Module):
     def start_training (self,
                         num_epochs=10, 
 			            verbose=False,
-                        text_field="context_10",
+                        text_field="context_100",
                         label_field="Valid Relation",
                         max_model_length=512,
 	                    eval_freq_in_epochs=1):
         """  Train the model with examples and evaluate the model as we train.
         num_epochs (int): The number of epochs to train (default: 10)
-        text_field (str): The field that contains the text (default: "context_10")
+        text_field (str): The field that contains the text (default: "context_100")
         label_field (str): The field that contains the label (default: "Valid Relation")
         verbose (bool):  Print debugging  and update messages if this flag is True (default: False)
         context_field (str): The column name which contains the textual context (default: "context_10")
