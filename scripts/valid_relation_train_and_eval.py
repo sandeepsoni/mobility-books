@@ -35,8 +35,7 @@ def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
                                              random_state=96)
     else:
         with open (test_ids_file) as fin:
-            test_ids = [line for line in fin]
-        print (test_ids)
+            test_ids = [line.strip() for line in fin]
         train_df = full_df.query ("ID not in @test_ids")
         test_df = full_df.query ("ID in @test_ids")
 
