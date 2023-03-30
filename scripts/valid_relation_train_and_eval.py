@@ -13,6 +13,12 @@ if os.path.abspath ("../") not in sys.path:
 
 from modules.relation_prediction import BERTRelationPrediction
 from modules.relation_prediction_constants import ALL_LABELS, SPATIAL_LABELS, VALID_LABELS
+import logging
+
+logging.basicConfig (
+    level=logging.INFO,
+    format='%(asctime)s %(message)s'
+)
 
 def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
     labels = kwargs.get ("labels", ALL_LABELS)
@@ -33,6 +39,7 @@ def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
         train_df = full_df.query ("ID not in @test_ids")
         test_df = full_df.query ("ID in @test_ids")
 
+    logging.info (f"All records: {len (full_df)}; for training: {len (train_df)}, for testing: {len (test_df)}")
     return full_df, train_df, test_df
 
 def readArgs ():
