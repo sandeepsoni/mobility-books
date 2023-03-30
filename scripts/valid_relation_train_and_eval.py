@@ -53,6 +53,7 @@ def readArgs ():
     parser.add_argument ("--text-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
     parser.add_argument ("--label-field", required=False, default="Valid Relation", type=str, help="Column that contains the label")
     parser.add_argument ("--model-path", required=True, type=str, help="Path to the file that will store the model")
+    parser.add_argument ("--predictions-path", required=False, type=str, default="", help="Path to the file that will store the predictions")
     parser.add_argument ("--num-labels", required=False, type=int, default=2, help="The number of labels in the spatial relation prediction task")
     args = parser.parse_args ()
     return args
@@ -77,7 +78,8 @@ def main (args):
                               label_field=args.label_field, 
                               verbose=True)
 	
-    predictor.save_model (args.model_path)
+    predictor.save (args.model_path,
+                    args.predictions_path)
 
 if __name__ == "__main__":
     main (readArgs ())

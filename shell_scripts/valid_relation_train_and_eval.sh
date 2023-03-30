@@ -7,4 +7,5 @@ python ../scripts/valid_relation_train_and_eval.py \
        --label-field 'Valid Relation' \
        --model-path ../data/experiments/bad_categories/model_checkpoints/trained.v1.pt \
        --num-labels 2 \
-       --test-ids-file ../data/annotations/final_annotations/common_ids.txt
+       --test-ids-file ../data/annotations/final_annotations/common_ids.txt \
+       --predictions-path ../data/experiments/bad_categories/predictions/common_ids.csv

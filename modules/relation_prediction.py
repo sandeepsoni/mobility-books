@@ -176,6 +176,8 @@ class BERTRelationPrediction (nn.Module):
                 groundtruth, predictions = self.__eval__ (text_field=text_field,
 							                              label_field=label_field,
 							                              max_model_length=max_model_length)
+                self.predictions = predictions
+                self.groundtruth = groundtruth
             if verbose: logging.info (classification_report (groundtruth, predictions))
             self.num_epochs += 1
 	
@@ -217,6 +219,20 @@ class BERTRelationPrediction (nn.Module):
 			'optimizer_state_dict': self.optimizer.state_dict(),
 			'loss': self.overall_loss/len(self.train_df),
 			}, model_path)
+	
+    def save_predictions (self, predictions_path):
+        self.test_df.loc[:, "predictions"] = self.predictions
+        self.test_df.loc[:, "groundtruth"] = self.groundtruth
+        self.test_df.to_csv (predictions_path, sep=",", header=True, index=False)
+
+    def save (self, 
+              model_path="",
+	          predictions_path=""):
+        if not len (model_path) == 0:
+            self.save_model (model_path)
+
+        if not len (predictions_path) == 0:
+            self.save_predictions (predictions_path)
 
 
 class SpatialRelationPrediction (nn.Module):
