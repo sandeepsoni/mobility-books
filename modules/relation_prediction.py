@@ -154,7 +154,7 @@ class BERTRelationPrediction (nn.Module):
         return groundtruth, predictions
 				
     def start_training (self,
-                        num_epochs=10, 
+                        num_epochs=10,
 			            verbose=False,
                         text_field="context_100",
                         label_field="Valid Relation",

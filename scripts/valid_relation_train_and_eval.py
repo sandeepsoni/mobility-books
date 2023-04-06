@@ -49,6 +49,7 @@ def readArgs ():
     parser.add_argument ("--test-ids-file", required=False, default="", type=str, help="Test file contains IDS on which we want to test")
     parser.add_argument ("--training-frac", required=False, default=0.8, type=float, help="Training fraction")
     parser.add_argument ("--num-epochs", required=False, default=10, type=int, help="Number of epochs for training")
+    parser.add_argument ("--num-hidden", required=False, default=0, type=int, help="Number of hidden layers in the network")
     parser.add_argument ("--window-size", required=False, default=100, type=int, help="Specify the size of the window in number of tokens")
     parser.add_argument ("--text-field", required=False, default="context_100", type=str, help="Column name that contains the entire text")
     parser.add_argument ("--label-field", required=False, default="Valid Relation", type=str, help="Column that contains the label")
@@ -63,6 +64,7 @@ def main (args):
     predictor = BERTRelationPrediction (model_name=args.pretrained_model_name,
                                         dims=768,
                                         n_labels=args.num_labels,
+                                        n_hidden=args.num_hidden,
                                         device=device,
                                         lr=1e-6,
                                         labels=VALID_LABELS)

@@ -2,6 +2,7 @@ python ../scripts/valid_relation_train_and_eval.py \
        --pretrained-model-name bert-base-cased \
        --annotated-data-file ../data/annotations/final_annotations/final_annotations.v1.pickle \
        --num-epochs 15 \
+       --num-hidden 0 \
        --window-size 100 \
        --text-field context_100 \
        --label-field 'Valid Relation' \
