@@ -44,7 +44,8 @@ def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
 
 def readArgs ():
     parser = argparse.ArgumentParser (description="Script to train and evaluate a spatial relation prediction model")
-    parser.add_argument ("--pretrained-model-name", required=True, type=str, help="Name of the pretrained model")
+    parser.add_argument ("--pretrained-model-name", required=False, default= "bert-base-cased", type=str, help="Name of the pretrained model")
+    parser.add_argument ("--dims", required=False, type=int, default=768, help="Size of contextual embedding")
     parser.add_argument ("--annotated-data-file", required=True, type=str, help="Annotated data is in this pickle file")
     parser.add_argument ("--test-ids-file", required=False, default="", type=str, help="Test file contains IDS on which we want to test")
     parser.add_argument ("--training-frac", required=False, default=0.8, type=float, help="Training fraction")
@@ -62,7 +63,7 @@ def readArgs ():
 def main (args):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     predictor = BERTRelationPrediction (model_name=args.pretrained_model_name,
-                                        dims=768,
+                                        dims=args.dims,
                                         n_labels=args.num_labels,
                                         n_hidden=args.num_hidden,
                                         device=device,
