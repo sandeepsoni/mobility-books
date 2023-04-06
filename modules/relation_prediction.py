@@ -10,6 +10,7 @@ from transformers import BertTokenizer, BertModel
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, confusion_matrix, classification_report
 from .relation_prediction_utils import wordpiece_boundaries, tokens2wordpieces
+from .feedforward import FeedForwardNet
 import logging
 
 class BERTRelationPrediction (nn.Module):
@@ -18,6 +19,7 @@ class BERTRelationPrediction (nn.Module):
 		          model_name="bert-base-cased",
 		          dims=768,
 		          n_labels=8,
+                  n_hidden=0,
                   labels=[""],
 		          device="cpu",
 		          lr=1e-5):
@@ -27,7 +29,8 @@ class BERTRelationPrediction (nn.Module):
                                                         do_basic_tokenize=False)
         self.bert = BertModel.from_pretrained (model_name)
         self.n_labels = n_labels
-        self.fc = nn.Linear (2*dims, self.n_labels)
+        #self.fc = nn.Linear (2*dims, self.n_labels)
+        self.fc = FeedForwardNet (2*dims, [dims for i in range (0, n_hidden)], self.n_labels, activation="tanh", use_batchnorm=False)
         self.device = device
         self.to (self.device)
         self.optimizer = optim.Adam (self.parameters (), lr=lr)
