@@ -7,6 +7,7 @@ import numpy as np
 import pickle
 
 from transformers import BertTokenizer, BertModel
+from transformers import AutoTokenizer, AutoModel
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, confusion_matrix, classification_report
 from .relation_prediction_utils import wordpiece_boundaries, tokens2wordpieces
@@ -24,10 +25,10 @@ class BERTRelationPrediction (nn.Module):
 		          device="cpu",
 		          lr=1e-5):
         super().__init__()
-        self.tokenizer = BertTokenizer.from_pretrained (model_name,
+        self.tokenizer = AutoTokenizer.from_pretrained (model_name,
                                                         do_lower_case=False,
                                                         do_basic_tokenize=False)
-        self.bert = BertModel.from_pretrained (model_name)
+        self.model = AutoModel.from_pretrained (model_name)
         self.n_labels = n_labels
         #self.fc = nn.Linear (2*dims, self.n_labels)
         self.fc = FeedForwardNet (2*dims, [dims for i in range (0, n_hidden)], self.n_labels, activation="tanh", use_batchnorm=False)
@@ -55,7 +56,7 @@ class BERTRelationPrediction (nn.Module):
         """
 
         encoded_input.to(self.device)
-        _, pooled_inputs, sequence_outputs =  self.bert (**encoded_input, 
+        _, pooled_inputs, sequence_outputs =  self.model (**encoded_input, 
                                                          output_hidden_states=True, 
                                                          return_dict=False)
         last_layer_output = sequence_outputs[-1][0]
