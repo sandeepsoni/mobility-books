@@ -5,8 +5,7 @@ python ../scripts/valid_relation_train_and_eval.py \
        --num-hidden 0 \
        --window-size 100 \
        --text-field context_100 \
-       --label-field 'Valid Relation' \
+       --task-name 'validity' \
        --model-path ../data/experiments/bad_categories/model_checkpoints/trained.v1.pt \
-       --num-labels 2 \
        --test-ids-file ../data/annotations/final_annotations/common_ids.txt \
        --predictions-path ../data/experiments/bad_categories/predictions/common_ids.csv
