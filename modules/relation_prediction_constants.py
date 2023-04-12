@@ -22,3 +22,29 @@ SPATIAL_LABELS = list (set (ALL_LABELS) - set (BAD_LABELS))
 VALID_LABELS = ["INVALID", "VALID"]
 VALID_LABELS_IDX = {i:label for i,label in enumerate (VALID_LABELS)}
 VALID_LABELS_IIDX = {label: i for i,label in enumerate (VALID_LABELS)}
+
+SPATIAL_RELATION_COLLAPSED_MAP = {
+    "NO RELATIONSHIP ASSERTED": "NO REL",
+    "TOWARD(got there)": "TO",
+    "FROM": "FROM",
+    "NEAR": "NEAR",
+    "IN": "IN",
+    "NEGATIVE ASSERTION": "NO REL",
+    "THROUGH": "THRU",
+    "TOWARD (uncertain got there)": "NO REL",
+    "UNCERTAIN ASSERTION": "NO REL"
+}
+
+SPATIAL_RELATION_COLLAPSED_LABELS = [
+    "NO REL",
+    "TO",
+    "FROM",
+    "NEAR",
+    "IN",
+    "THRU"
+]
+
+TASKS = [
+    "validity",
+    "spatial-collapsed"
+]
