@@ -49,11 +49,11 @@ def modify_context (paths, row, offset=10):
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
-    examples = examples.head (100)
-    examples['modified_context_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
-    examples['modified_context_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
-    examples['modified_context_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
-    print (examples.head (5))
+    examples['context_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
+    examples['context_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
+    examples['context_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
+
+    examples.to_csv (args.output_file, sep='\t', index=False, header=True)
 
 if __name__ == "__main__":
     main (readArgs ())
