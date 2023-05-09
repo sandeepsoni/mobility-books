@@ -32,8 +32,11 @@ def modify_context (paths, row):
     last_token = str (max (row['persons_end_token'], row['locations_end_token']))
     filename = correct_path (paths, f"{book_id}.tokens")
     df = read_file (filename, sep='\t')
-    sent_id = int(df.query ('token_ID_within_document == @last_token')['sentence_ID'].values[0])
-    return sent_id+1    
+    print (df.dtypes)
+    next_sent = int(df.query ('token_ID_within_document == @last_token')['sentence_ID'].values[0]) + 1
+    next_sent = str (next_sent)
+    df.query ('sentence_ID == @next_sent')
+    return next_sent
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
