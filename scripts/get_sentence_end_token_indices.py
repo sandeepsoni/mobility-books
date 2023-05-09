@@ -33,11 +33,14 @@ def modify_context (paths, row):
     filename = correct_path (paths, book_id)
     df = read_file (filename, sep='\t')
     df = df.query ('token_ID_within_document == @last_token')
-    return book_id
+    sent_id = df['sentence_ID']
+    return sent_id
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
-    examples['modified_context_10'] = examples.apply (lambda x: modify_context (args.paths, x))
+    examples.head (20)
+    examples['sent_id'] = examples.apply (lambda x: modify_context (args.paths, x), axis=1)
+    print (examples.head (5))
 
 if __name__ == "__main__":
     main (readArgs ())
