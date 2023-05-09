@@ -33,7 +33,7 @@ def modify_context (paths, row):
     filename = correct_path (paths, f"{book_id}.tokens")
     df = read_file (filename, sep='\t')
     df = df.query ('token_ID_within_document == @last_token')
-    sent_id = df['sentence_ID']
+    sent_id = df['sentence_ID'].values[0]
     return sent_id
 
 def main (args):
