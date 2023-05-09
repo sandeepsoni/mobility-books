@@ -27,8 +27,16 @@ def read_file (filename, sep='\t'):
     df = pd.DataFrame (rows[1:], columns=rows[0])
     return df
 
+def modify_context (paths, row):
+    book_id = row['book_id']
+    last_token = max (row['persons_end_token'], row['locations_end_token'])
+    filename = correct_path (paths, book_id)
+    df = read_file (filename, sep='\t')
+    return book_id
+
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
+    examples['modified_context_10'] = examples.apply (lambda x: modify_context (args.paths, x))
 
 if __name__ == "__main__":
     main (readArgs ())
