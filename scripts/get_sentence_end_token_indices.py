@@ -40,14 +40,19 @@ def modify_context (paths, row, offset=10):
     df = read_file (filename, sep='\t')
     next_sent = df.query ('token_ID_within_document == @last_token')['sentence_ID'].values[0] + 1
     token_next_sent_end =  df.query ('sentence_ID == @next_sent')['token_ID_within_document'].max()
-    return min (offset + last_token, token_next_sent_end)
+    field_name = f'context_{offset}'
+    end = min (offset + last_token, token_next_sent_end)
+    start = min (row['persons_start_token'], row['locations_end_token']) - offset
+    text = row[field_name]
+    tokens = text.split ()
+    return " ".join (tokens[0:end-start])
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
     examples = examples.head (20)
-    examples['end_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
-    examples['end_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
-    examples['end_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
+    examples['modified_context_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
+    examples['modified_context_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
+    examples['modified_context_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
     print (examples.head (5))
 
 if __name__ == "__main__":
