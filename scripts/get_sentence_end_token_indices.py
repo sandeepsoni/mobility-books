@@ -1,0 +1,34 @@
+"""
+Amanpreet's annotations did not have the sentence ends. 
+So for all the examples in the sample that Amanpreet used, we'll try to get the sentence end token indices.
+"""
+
+import argparse
+import os
+import pandas as pd
+
+def readArgs ():
+    parser = argparse.ArgumentParser (description="Get the sentence ends for each example")
+    parser.add_argument ('--dir-paths', type=str, required=True, help="Directory paths that contain bookNLP files")
+    parser.add_argument ('--sample-file', tpe=str, required=True, help="File contains the sample")
+    parser.add_argument ("--output-file", tpe=str, required=True, help="File contains the output")
+    args = parser.parse_args ()
+    return args
+
+def correct_path (paths, filename):
+    for path in paths:
+        if os.path.exists (os.path.join (path, filename)) and os.path.isfile (os.path.join (path, filename)):
+            return os.path.join (path, filename)
+        
+def read_file (filename, sep='\t'):
+    with open (filename) as fin:
+        rows = [line.strip().split (sep) for line in fin]
+    
+    df = pd.DataFrame (rows[1:], columns=rows[0])
+    return df
+
+def main (args):
+    examples = pd.read_csv (args.sample_file, sep='\t')
+
+if __name__ == "__main__":
+    main (readArgs ())
