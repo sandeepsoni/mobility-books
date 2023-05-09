@@ -9,7 +9,7 @@ import pandas as pd
 
 def readArgs ():
     parser = argparse.ArgumentParser (description="Get the sentence ends for each example")
-    parser.add_argument ('--dir-paths', type=str, required=True, help="Directory paths that contain bookNLP files")
+    parser.add_argument ('--dir-paths', type=str, required=True, nargs='+', help="Directory paths that contain bookNLP files")
     parser.add_argument ('--sample-file', type=str, required=True, help="File contains the sample")
     parser.add_argument ("--output-file", type=str, required=True, help="File contains the output")
     args = parser.parse_args ()
