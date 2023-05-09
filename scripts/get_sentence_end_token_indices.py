@@ -29,12 +29,12 @@ def read_file (filename, sep='\t'):
 
 def modify_context (paths, row):
     book_id = row['book_id']
-    last_token = max (row['persons_end_token'], row['locations_end_token'])
+    last_token = str (max (row['persons_end_token'], row['locations_end_token']))
     filename = correct_path (paths, f"{book_id}.tokens")
     df = read_file (filename, sep='\t')
     df = df.query ('token_ID_within_document == @last_token')
     sent_id = df['sentence_ID'].values[0]
-    return sent_id
+    return sent_id+1
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
