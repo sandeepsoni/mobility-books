@@ -25,23 +25,28 @@ def read_file (filename, sep='\t'):
         rows = [line.strip().split (sep) for line in fin]
     
     df = pd.DataFrame (rows[1:], columns=rows[0])
+    df = df.astype({
+        'paragraph_ID':'int64',
+        'sentence_ID': 'int64',
+        'token_ID_within_sentence': 'int64',
+        'token_ID_within_document': 'int64'
+    })
     return df
 
 def modify_context (paths, row):
     book_id = row['book_id']
-    last_token = str (max (row['persons_end_token'], row['locations_end_token']))
+    last_token = max (row['persons_end_token'], row['locations_end_token'])
     filename = correct_path (paths, f"{book_id}.tokens")
     df = read_file (filename, sep='\t')
     print (df.dtypes)
-    next_sent = int(df.query ('token_ID_within_document == @last_token')['sentence_ID'].values[0]) + 1
-    next_sent = str (next_sent)
-    df.query ('sentence_ID == @next_sent')
-    return next_sent
+    next_sent = df.query ('token_ID_within_document == @last_token')['sentence_ID'].values[0] + 1
+    token_next_sent_end =  df.query ('sentence_ID == @next_sent')['token_ID_within_document'].max()
+    return token_next_sent_end
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
     examples = examples.head (20)
-    examples['sent_id'] = examples.apply (lambda x: modify_context (args.dir_paths, x), axis=1)
+    examples['token_next_sent_end'] = examples.apply (lambda x: modify_context (args.dir_paths, x), axis=1)
     print (examples.head (5))
 
 if __name__ == "__main__":
