@@ -6,6 +6,7 @@ So for all the examples in the sample that Amanpreet used, we'll try to get the 
 import argparse
 import os
 import pandas as pd
+from tqdm import tqdm
 
 def readArgs ():
     parser = argparse.ArgumentParser (description="Get the sentence ends for each example")
@@ -48,10 +49,11 @@ def modify_context (paths, row, offset=10):
     return " ".join (tokens[0:end-start+1])
 
 def main (args):
+    tqdm.pandas(desc='My bar!')
     examples = pd.read_csv (args.sample_file, sep='\t')
-    examples['context_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
-    examples['context_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
-    examples['context_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
+    examples['context_10'] = examples.progress_apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
+    examples['context_50'] = examples.progress_apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
+    examples['context_100'] = examples.progress_apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
 
     examples.to_csv (args.output_file, sep='\t', index=False, header=True)
 
