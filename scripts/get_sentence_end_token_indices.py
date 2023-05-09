@@ -45,7 +45,9 @@ def modify_context (paths, row, offset=10):
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
     examples = examples.head (20)
-    examples['token_next_sent_end'] = examples.apply (lambda x: modify_context (args.dir_paths, x), axis=1)
+    examples['end_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
+    examples['end_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
+    examples['end_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
     print (examples.head (5))
 
 if __name__ == "__main__":
