@@ -32,6 +32,7 @@ def modify_context (paths, row):
     last_token = max (row['persons_end_token'], row['locations_end_token'])
     filename = correct_path (paths, book_id)
     df = read_file (filename, sep='\t')
+    df = df.query ('token_ID_within_document == @last_token')
     return book_id
 
 def main (args):
