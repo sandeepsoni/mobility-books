@@ -39,7 +39,7 @@ def modify_context (paths, row):
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
     examples.head (20)
-    examples['sent_id'] = examples.apply (lambda x: modify_context (args.paths, x), axis=1)
+    examples['sent_id'] = examples.apply (lambda x: modify_context (args.dir_paths, x), axis=1)
     print (examples.head (5))
 
 if __name__ == "__main__":
