@@ -38,7 +38,6 @@ def modify_context (paths, row):
     last_token = max (row['persons_end_token'], row['locations_end_token'])
     filename = correct_path (paths, f"{book_id}.tokens")
     df = read_file (filename, sep='\t')
-    print (df.dtypes)
     next_sent = df.query ('token_ID_within_document == @last_token')['sentence_ID'].values[0] + 1
     token_next_sent_end =  df.query ('sentence_ID == @next_sent')['token_ID_within_document'].max()
     return token_next_sent_end
