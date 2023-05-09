@@ -45,11 +45,11 @@ def modify_context (paths, row, offset=10):
     start = min (row['persons_start_token'], row['locations_end_token']) - offset
     text = row[field_name]
     tokens = text.split ()
-    return " ".join (tokens[0:end-start])
+    return " ".join (tokens[0:end-start+1])
 
 def main (args):
     examples = pd.read_csv (args.sample_file, sep='\t')
-    examples = examples.head (20)
+    examples = examples.head (100)
     examples['modified_context_10'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=10), axis=1)
     examples['modified_context_50'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=50), axis=1)
     examples['modified_context_100'] = examples.apply (lambda x: modify_context (args.dir_paths, x, offset=100), axis=1)
