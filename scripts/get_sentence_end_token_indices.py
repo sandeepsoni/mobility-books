@@ -1,6 +1,11 @@
 """
 Amanpreet's annotations did not have the sentence ends. 
 So for all the examples in the sample that Amanpreet used, we'll try to get the sentence end token indices.
+
+python get_sentence_end_token_indices.py \
+    --dir-paths /mnt/data0/kentkchang/charemotions/corpus/booknlp.1.0.7/gutenberg_fiction_tagged_1_4/ /mnt/data0/kentkchang/charemotions/corpus/booknlp.1.0.7/gutenberg_fiction_tagged_5_9/ \
+    --sample-file ../data/annotations/sample_annotations.v1.tsv \
+    --output-file ../data/annotations/sample_annotations.v1.modified.tsv
 """
 
 import argparse
