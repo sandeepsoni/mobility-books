@@ -80,9 +80,27 @@ class BERTRelationPrediction (nn.Module):
             annotations = pickle.load (fin)
         self.full_df, self.train_df, self.test_df = kwargs["preprocess"] (annotations, *args, **kwargs)
 	
+    def load_data1 (self,
+		            train_data_file,
+		            train_labels_file,
+		            dev_data_file,
+		            dev_labels_file,
+		            *args,
+		            **kwargs):
+        """ Load data from the train and dev files.
+
+        train_data_file (str): The path to file that contains the training data
+        train_labels_file (str): The path to file that contains the training labels
+        dev_data_file (str): The path to the file that contains the dev data
+        dev_labells_file (str): The path to th file that contains the dev labels
+        args: variable length arguments
+        kwargs: variable length keyword arguments
+        """
+        self.full_df, self.train_df, self.dev_df = kwargs["preprocess"] (train_data_file, train_labels_file, dev_data_file, dev_labels_file, *args, **kwargs)
+	
     def __train__ (self, 
                    text_field="context_100",
-                   label_field="Valid Relation",
+                   label_field="valid_relation",
                    max_model_length=512,
 		           sep=" "):
         # Train
@@ -93,13 +111,9 @@ class BERTRelationPrediction (nn.Module):
             text = self.train_df[text_field].iloc[i]
             label = self.train_df[label_field].iloc[i]
             tokens = text.split (sep)
-            index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
-                                                                                               tokens,
-											                                                   self.train_df.iloc[i]["persons_start"],
-											                                                   self.train_df.iloc[i]["persons_end"],
-											                                                   self.train_df.iloc[i]["locations_start"],
-											                                                   self.train_df.iloc[i]["locations_end"])
-            encoded_input = self.tokenizer (sep.join (tokens[0:index+1]), return_tensors="pt")
+            stripped_tokens, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
+													                                                    tokens)
+            encoded_input = self.tokenizer (sep.join (stripped_tokens), return_tensors="pt")
             if len (encoded_input['input_ids'][0]) > max_model_length:
                 continue
 	    
@@ -126,19 +140,15 @@ class BERTRelationPrediction (nn.Module):
         groundtruth, predictions = list (), list ()
         self.eval ()
         with torch.no_grad ():
-            for i in tqdm (range (len (self.test_df))):
-                text = self.test_df[text_field].iloc[i]
-                label = self.test_df[label_field].iloc[i]
+            for i in tqdm (range (len (self.dev_df))):
+                text = self.dev_df[text_field].iloc[i]
+                label = self.dev_df[label_field].iloc[i]
                 tokens = text.split (sep)
 
-                index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
-                                                                                                   tokens, 
-												                                                   self.test_df.iloc[i]["persons_start"],
-												                                                   self.test_df.iloc[i]["persons_end"],
-												                                                   self.test_df.iloc[i]["locations_start"], 
-												                                                   self.test_df.iloc[i]["locations_end"])
+                stripped_tokens, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
+													                                                         tokens)
 
-                encoded_input = self.tokenizer (sep.join (tokens[0:index+1]), return_tensors="pt")
+                encoded_input = self.tokenizer (sep.join (stripped_tokens), return_tensors="pt")
                 if len(encoded_input['input_ids'][0]) > max_model_length:
                     continue
 
@@ -158,7 +168,7 @@ class BERTRelationPrediction (nn.Module):
                         num_epochs=10,
 			            verbose=False,
                         text_field="context_100",
-                        label_field="Valid Relation",
+                        label_field="valid_relation",
                         max_model_length=512,
 	                    eval_freq_in_epochs=1):
         """  Train the model with examples and evaluate the model as we train.
@@ -225,9 +235,9 @@ class BERTRelationPrediction (nn.Module):
 			}, model_path)
 	
     def save_predictions (self, predictions_path):
-        self.test_df.loc[:, "predictions"] = self.predictions
-        self.test_df.loc[:, "groundtruth"] = self.groundtruth
-        self.test_df.to_csv (predictions_path, sep=",", header=True, index=False)
+        self.dev_df.loc[:, "predictions"] = self.predictions
+        self.dev_df.loc[:, "groundtruth"] = self.groundtruth
+        self.dev_df.to_csv (predictions_path, sep=",", header=True, index=False)
 
     def save (self, 
               model_path="",

@@ -35,7 +35,7 @@ SPATIAL_RELATION_COLLAPSED_MAP = {
     "UNCERTAIN ASSERTION": "NO REL"
 }
 
-SPATIAL_RELATION_COLLAPSED_LABELS = [
+SPATIAL_RELATION_LABELS = [
     "NO REL",
     "TO",
     "FROM",
@@ -46,5 +46,8 @@ SPATIAL_RELATION_COLLAPSED_LABELS = [
 
 TASKS = [
     "validity",
-    "spatial-collapsed"
+    "spatial",
+    "spatial-collapsed",
+    "temporal_span",
+    "narrative_tense"
 ]
