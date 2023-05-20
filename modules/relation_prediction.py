@@ -9,7 +9,7 @@ import pickle
 from transformers import BertTokenizer, BertModel
 from transformers import AutoTokenizer, AutoModel
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, confusion_matrix, classification_report
+from sklearn.metrics import f1_score, confusion_matrix, classification_report, accuracy_score
 from .relation_prediction_utils import wordpiece_boundaries, tokens2wordpieces
 from .feedforward import FeedForwardNet
 import logging
@@ -65,22 +65,8 @@ class BERTRelationPrediction (nn.Module):
         input_repr = torch.cat ((per_entity_repr, loc_entity_repr), 0)
         output = self.fc (input_repr)
         return output
-    
-    def load_data (self,
-		           filepath,
-                   *args,
-                   **kwargs):
-        """ Load data from filepath.
-        
-		filepath (str): The path of the pickle file that contains the entire training dataset.
-		args: variable length arguments
-		kwargs: variable length keyword arguments
-		"""
-        with open (filepath, "rb") as fin:
-            annotations = pickle.load (fin)
-        self.full_df, self.train_df, self.test_df = kwargs["preprocess"] (annotations, *args, **kwargs)
 	
-    def load_data1 (self,
+    def load_data (self,
 		            train_data_file,
 		            train_labels_file,
 		            dev_data_file,
@@ -96,7 +82,12 @@ class BERTRelationPrediction (nn.Module):
         args: variable length arguments
         kwargs: variable length keyword arguments
         """
-        self.full_df, self.train_df, self.dev_df = kwargs["preprocess"] (train_data_file, train_labels_file, dev_data_file, dev_labels_file, *args, **kwargs)
+        self.full_df, self.train_df, self.dev_df = kwargs["preprocess"] (train_data_file, 
+                                                                         train_labels_file, 
+                                                                         dev_data_file, 
+                                                                         dev_labels_file, 
+                                                                         *args, 
+                                                                         **kwargs)
 	
     def __train__ (self, 
                    text_field="context_100",
@@ -239,14 +230,25 @@ class BERTRelationPrediction (nn.Module):
         self.dev_df.loc[:, "groundtruth"] = self.groundtruth
         self.dev_df.to_csv (predictions_path, sep=",", header=True, index=False)
 
+    def save_training_dynamics (self, training_dynamics_path, sep="\t"):
+          with open (training_dynamics_path, "w") as fout:
+                fout.write (sep.join (["Epoch", "F1", "Accuracy"]) + "\n")
+                for item in self.scores:
+                      fout.write (sep.join ([item["epoch"], item["f1"], item["accuracy"]]) + "\n")
+                
+
     def save (self, 
               model_path="",
-	          predictions_path=""):
+	          predictions_path="",
+              training_dynamics_path=""):
         if not len (model_path) == 0:
             self.save_model (model_path)
 
         if not len (predictions_path) == 0:
             self.save_predictions (predictions_path)
+	    
+        if not len (training_dynamics_path) == 0:
+            self.save_training_dynamics (training_dynamics_path)
 
 
 class SpatialRelationPrediction (nn.Module):
@@ -432,6 +434,7 @@ class SpatialRelationPrediction (nn.Module):
 		eval_freq_in_epochs (int): The number of epochs after which one round of evaluation is done (default: 1)
 
 		"""
+		self.scores = list ()
 		for epoch in range(num_epochs):
 			if verbose: print (f"Epoch: {epoch+1}")
 			self.overall_loss = 0.0
@@ -493,6 +496,11 @@ class SpatialRelationPrediction (nn.Module):
 						predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
 
 				if verbose: print (classification_report (groundtruth, predictions))
+				self.scores.append ({
+					"accuracy": accuracy_score (groundtruth, predictions),
+					"f1": f1_score (groundtruth, predictions),
+					"epoch": epoch    
+                })
 						
 			
 

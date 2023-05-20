@@ -164,6 +164,12 @@ def readArgs ():
                          default="", 
                          help="Path to the file that will store the predictions")
     
+    parser.add_argument ("--training-dynamics-path",
+                         required=False,
+                         type=str,
+                         default="",
+                         help="Path to the file that will store the training dynamics of file")
+    
     args = parser.parse_args ()
     return args
 
@@ -197,12 +203,12 @@ def main (args):
                                         lr=1e-6,
                                         labels=config_options[args.task_name]["label_space"])
     
-    predictor.load_data1 (args.train_data_file,
-                          args.train_labels_file,
-                          args.dev_data_file,
-                          args.dev_labels_file, 
-                          preprocess=config_options[args.task_name]["preproc_callback"],
-                          num_training_examples=args.num_training_examples)
+    predictor.load_data (args.train_data_file,
+                         args.train_labels_file,
+                         args.dev_data_file,
+                         args.dev_labels_file, 
+                         preprocess=config_options[args.task_name]["preproc_callback"],
+                         num_training_examples=args.num_training_examples)
     
     #print (np.sum(["<char>" in item.split() for item in predictor.dev_df[args.text_field].values]))
     #return
@@ -213,7 +219,8 @@ def main (args):
                               verbose=True)
     
     predictor.save (args.model_path,
-                    args.predictions_path)
+                    args.predictions_path,
+                    args.training_dynamics_path)
 
 if __name__ == "__main__":
     main (readArgs ())
