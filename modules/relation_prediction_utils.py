@@ -21,7 +21,7 @@ def wordpiece_boundaries (tokenizer,
     entity_tokens = tokenizer (" ".join (tokens[start_index:end_index+1]))
     start_wordpiece = len (prefix_tokens['input_ids'][1:-1]) - \
 	                  len (entity_tokens['input_ids'][1:-1])
-    end_wordpiece = len (prefix_tokens['input_ids'][1:-1])    
+    end_wordpiece = len (prefix_tokens['input_ids'][1:-1])
     return start_wordpiece, end_wordpiece-1
 
 """
@@ -88,7 +88,7 @@ def tokens2wordpieces (tokenizer,
         return stripped_items, indices
     
     stripped_tokens, indices = get_start_end_index (tokens, special_tokens={"<char>", "</char>", "<place>", "</place>"})
-    per_wp_start, per_wp_end = wordpiece_boundaries (tokenizer, tokens, indices["<char>"], indices["</char>"])
-    loc_wp_start, loc_wp_end = wordpiece_boundaries (tokenizer, tokens, indices["<place>"], indices["</place>"])
+    per_wp_start, per_wp_end = wordpiece_boundaries (tokenizer, stripped_tokens, indices["<char>"], indices["</char>"])
+    loc_wp_start, loc_wp_end = wordpiece_boundaries (tokenizer, stripped_tokens, indices["<place>"], indices["</place>"])
 
     return stripped_tokens, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end)

@@ -31,7 +31,7 @@ class BERTRelationPrediction (nn.Module):
         self.model = AutoModel.from_pretrained (model_name)
         self.n_labels = n_labels
         #self.fc = nn.Linear (2*dims, self.n_labels)
-        self.fc = FeedForwardNet (2*dims, [dims for i in range (0, n_hidden)], self.n_labels, activation="tanh", use_batchnorm=False)
+        self.fc = FeedForwardNet (2*dims, [dims for i in range (0, n_hidden)], self.n_labels, activation="sigmoid", use_batchnorm=False)
         self.device = device
         self.to (self.device)
         self.optimizer = optim.Adam (self.parameters (), lr=lr)
@@ -62,6 +62,7 @@ class BERTRelationPrediction (nn.Module):
         last_layer_output = sequence_outputs[-1][0]
         per_entity_repr = last_layer_output[per_wp_start:per_wp_end+1].mean(dim=0)
         loc_entity_repr = last_layer_output[loc_wp_start:loc_wp_end+1].mean(dim=0)
+
         input_repr = torch.cat ((per_entity_repr, loc_entity_repr), 0)
         output = self.fc (input_repr)
         return output
@@ -97,13 +98,14 @@ class BERTRelationPrediction (nn.Module):
         # Train
         self.train()
         self.overall_loss = 0.0
-        for i in range (len (self.train_df)):
+        for i in tqdm (range (len (self.train_df))):
             # get the extracted quantities
             text = self.train_df[text_field].iloc[i]
             label = self.train_df[label_field].iloc[i]
             tokens = text.split (sep)
             stripped_tokens, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
-													                                                    tokens)
+                                                                                                         tokens)
+            
             encoded_input = self.tokenizer (sep.join (stripped_tokens), return_tensors="pt")
             if len (encoded_input['input_ids'][0]) > max_model_length:
                 continue
@@ -121,7 +123,6 @@ class BERTRelationPrediction (nn.Module):
             self.overall_loss += example_loss
             loss.backward ()
             self.optimizer.step ()
-            print (i, text, label, y_pred, y_truth, example_loss)
         return self.overall_loss/len (self.train_df)
 	
     def __eval__ (self, 
@@ -153,7 +154,7 @@ class BERTRelationPrediction (nn.Module):
             
                 y_truth = self.labels.index (label)
                 groundtruth.append (y_truth)
-                predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
+                predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred, dim=0)).item())
 
         return groundtruth, predictions
 				
