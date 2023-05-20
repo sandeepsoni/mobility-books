@@ -171,6 +171,7 @@ class BERTRelationPrediction (nn.Module):
         max_model_length (int): The maximum length in terms of wordpieces that the model can handle (default: 512)
         eval_freq_in_epochs (int): The number of epochs after which one round of evaluation is done (default: 1)
 		"""
+        self.scores = list ()
         for epoch in range(num_epochs):
             if verbose: logging.info (f"Starting Epoch {epoch+1}")
             loss = self.__train__ (text_field=text_field,
@@ -183,6 +184,11 @@ class BERTRelationPrediction (nn.Module):
 							                              max_model_length=max_model_length)
                 self.predictions = predictions
                 self.groundtruth = groundtruth
+                self.scores.append ({
+					"accuracy": accuracy_score (groundtruth, predictions),
+					"f1": f1_score (groundtruth, predictions),
+					"epoch": epoch    
+                })
             if verbose: logging.info (classification_report (groundtruth, predictions))
             self.num_epochs += 1
 	
@@ -434,7 +440,6 @@ class SpatialRelationPrediction (nn.Module):
 		eval_freq_in_epochs (int): The number of epochs after which one round of evaluation is done (default: 1)
 
 		"""
-		self.scores = list ()
 		for epoch in range(num_epochs):
 			if verbose: print (f"Epoch: {epoch+1}")
 			self.overall_loss = 0.0
@@ -496,11 +501,6 @@ class SpatialRelationPrediction (nn.Module):
 						predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
 
 				if verbose: print (classification_report (groundtruth, predictions))
-				self.scores.append ({
-					"accuracy": accuracy_score (groundtruth, predictions),
-					"f1": f1_score (groundtruth, predictions),
-					"epoch": epoch    
-                })
 						
 			
 
