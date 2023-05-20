@@ -117,9 +117,11 @@ class BERTRelationPrediction (nn.Module):
             y_truth = self.labels.index (label)
             loss = self.cross_entropy (y_pred.unsqueeze (0), torch.tensor ([y_truth]).to(self.device))
             self.optimizer.zero_grad ()
-            self.overall_loss += loss.item ()
+            example_loss = loss.item()
+            self.overall_loss += example_loss
             loss.backward ()
             self.optimizer.step ()
+            print (i, text, label, y_pred, y_truth, example_loss)
         return self.overall_loss/len (self.train_df)
 	
     def __eval__ (self, 
