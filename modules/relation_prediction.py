@@ -7,7 +7,7 @@ import numpy as np
 import pickle
 
 from transformers import BertTokenizer, BertModel
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel, AutoModelForSequenceClassification
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, confusion_matrix, classification_report, accuracy_score
 from .relation_prediction_utils import wordpiece_boundaries, tokens2wordpieces
@@ -97,7 +97,7 @@ class BERTRelationPrediction (nn.Module):
         # Train
         self.train()
         self.overall_loss = 0.0
-        for i in tqdm (range (len (self.train_df))):
+        for i in range (len (self.train_df)):
             # get the extracted quantities
             text = self.train_df[text_field].iloc[i]
             label = self.train_df[label_field].iloc[i]
