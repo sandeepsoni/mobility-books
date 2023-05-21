@@ -2,6 +2,7 @@
 Wrapper script to train a model for spatial relation prediction. 
 """
 import argparse
+import os
 import numpy as np
 import pandas as pd
 import torch
@@ -135,6 +136,12 @@ def readArgs ():
                          type=int,
                          help="Number of training examples")
     
+    parser.add_argument ("--learning-rate", 
+                         required=False, 
+                         default=1e-5, 
+                         type=float,
+                         help="Learning rate")
+    
     parser.add_argument ("--num-epochs", 
                          required=False, 
                          default=10, 
@@ -158,6 +165,11 @@ def readArgs ():
                          type=str, 
                          help="Path to the file that will store the model")
     
+    parser.add_argument ("--models-dir", 
+                         required=True, 
+                         type=str, 
+                         help="Directory in which to store the models")
+    
     parser.add_argument ("--predictions-path", 
                          required=False, 
                          type=str, 
@@ -169,6 +181,12 @@ def readArgs ():
                          type=str,
                          default="",
                          help="Path to the file that will store the training dynamics of file")
+    
+    parser.add_argument ("--results-dir",
+                         required=False,
+                         type=str,
+                         default="",
+                         help="Directory in which to store the results")
     
     args = parser.parse_args ()
     return args
@@ -190,6 +208,8 @@ def init_config ():
 def main (args):
     # Layout the configurations
     config_options = init_config ()
+    os.makedirs (args.models_dir, exist_ok=True)
+    os.makedirs (args.results_dir, exist_ok=True)
 
     # set the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -200,7 +220,7 @@ def main (args):
                                         n_labels=config_options[args.task_name]["num_labels"],
                                         n_hidden=args.num_hidden,
                                         device=device,
-                                        lr=1e-6,
+                                        lr=args.learning_rate,
                                         labels=config_options[args.task_name]["label_space"])
     
     predictor.load_data (args.train_data_file,
@@ -218,9 +238,9 @@ def main (args):
                               label_field=config_options[args.task_name]["label_field"], 
                               verbose=True)
     
-    predictor.save (args.model_path,
-                    args.predictions_path,
-                    args.training_dynamics_path)
+    predictor.save (os.path.join (args.models_dir, f'{args.task_name}.pt'),
+                    os.path.join (args.results_dir, f'{args.task_name}.examples.tsv'),
+                    os.path.join (args.results_dir, f'{args.task_name}.dynamics.tsv'))
 
 if __name__ == "__main__":
     main (readArgs ())
