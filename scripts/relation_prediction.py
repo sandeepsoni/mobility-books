@@ -23,28 +23,6 @@ logging.basicConfig (
     format='%(asctime)s %(message)s'
 )
 
-def preprocess_valid_relation_prediction (annotations, *args, **kwargs):
-    labels = kwargs.get ("labels", ALL_LABELS)
-    full_df = annotations[kwargs.get ("window_size", 10)]
-    full_df = full_df.query ("`Spatial Relation` != ''")
-    full_df = full_df.query ("`Spatial Relation` in @labels")
-    full_df.loc[:,kwargs.get("label_field", "Valid Relation")] = full_df.apply (lambda x: VALID_LABELS[int(x["Spatial Relation"] in SPATIAL_LABELS)], axis=1)
-
-    test_ids_file = kwargs.get ("test_ids_file", "")
-
-    if test_ids_file == "":
-        train_df, test_df = train_test_split(full_df, 
-                                             test_size=1-kwargs.get ("training_frac", .8), 
-                                             random_state=96)
-    else:
-        with open (test_ids_file) as fin:
-            test_ids = [line.strip() for line in fin]
-        train_df = full_df.query ("ID not in @test_ids")
-        test_df = full_df.query ("ID in @test_ids")
-
-    logging.info (f"All records: {len (full_df)}; for training: {len (train_df)}, for testing: {len (test_df)}")
-    return full_df, train_df, test_df
-
 def preprocess_spatial_relation_collapsed_prediction (annotations, *args, **kwargs):
     labels = kwargs.get ("labels", ALL_LABELS)
     full_df = annotations[kwargs.get ("window_size", 10)]
@@ -67,10 +45,11 @@ def preprocess_spatial_relation_collapsed_prediction (annotations, *args, **kwar
     return full_df, train_df, test_df
 
 def preprocess_valid_relation_prediction (train_data_file, 
-                                            train_labels_file,
-                                            dev_data_file,
-                                            dev_labels_file,
-                                            *args, **kwargs):
+                                          train_labels_file,
+                                          dev_data_file,
+                                          dev_labels_file,
+                                          *args, 
+                                          **kwargs):
     train_data = pd.read_csv (train_data_file, sep="\t", on_bad_lines="skip")
     train_labels = pd.read_csv (train_labels_file, sep="\t", on_bad_lines="skip")
 
@@ -86,14 +65,37 @@ def preprocess_valid_relation_prediction (train_data_file,
 
     return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
 
+def preprocess_spatial_relation_prediction (train_data_file,
+                                            train_labels_file,
+                                            dev_data_file,
+                                            dev_labels_file,
+                                            *args,
+                                            **kwargs):
+    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
+    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
+    train_df = train_df.query ("spatial_relation.notnull()")
+
+    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
+    dev_df = dev_df.query ("spatial_relation.notnull()")
+    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
+
+
 def readArgs ():
     parser = argparse.ArgumentParser (description="Script to train and evaluate a spatial relation prediction model")
     parser.add_argument ("--task-name", 
                          required=False, choices={"validity", 
-                                                 "spatial", 
-                                                 "spatial-collapsed", 
-                                                 "temporal_span", 
-                                                 "narrative_tense"}, 
+                                                  "spatial", 
+                                                  "spatial-collapsed", 
+                                                  "temporal_span", 
+                                                  "narrative_tense"}, 
                          default="validity", 
                          type=str, 
                          help="Name of the task")
@@ -181,10 +183,10 @@ def init_config ():
     config_options["validity"]["label_space"] = VALID_LABELS
     config_options["validity"]["label_field"] = "valid_relation"
 
-    #config_options["spatial"]["preproc_callback"] = preprocess_spatial_relation_prediction
-    #config_options["spatial"]["num_labels"] = len (SPATIAL_RELATION_LABELS)
-    #config_options["spatial"]["label_space"] = SPATIAL_RELATION_LABELS
-    #config_options["spatial"]["label_field"] = "spatial_relation"
+    config_options["spatial"]["preproc_callback"] = preprocess_spatial_relation_prediction
+    config_options["spatial"]["num_labels"] = len (SPATIAL_RELATION_LABELS)
+    config_options["spatial"]["label_space"] = SPATIAL_RELATION_LABELS
+    config_options["spatial"]["label_field"] = "spatial_relation"
 
     return config_options
 
