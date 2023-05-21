@@ -137,21 +137,21 @@ def preprocess_relation_prediction (train_data_file,
                                     dev_labels_file,
                                     *args,
                                     **kwargs):
-    task_name = kwargs.get ("task_name", "validity")
+    label_field = kwargs.get ("field_name", "valid_relation")
     train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
     train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")  
 
     # Merge the two dataframes
     train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
     train_df = train_df.head (kwargs.get ("num_training_examples", 100))
-    train_df = train_df.query (f"{task_name}.notnull()")
+    train_df = train_df.query (f"{label_field}.notnull()")
 
     dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
     dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
 
     # Merge the two dataframes
     dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
-    dev_df = dev_df.query (f"{task_name}.notnull()")
+    dev_df = dev_df.query (f"{label_field}.notnull()")
     return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df   
 
 
@@ -290,7 +290,8 @@ def main (args):
                          args.dev_data_file,
                          args.dev_labels_file, 
                          preprocess=config_options[args.task_name]["preproc_callback"],
-                         num_training_examples=args.num_training_examples)
+                         num_training_examples=args.num_training_examples,
+                         label_field=config_options[args.task_name]["label_field"])
     
 	
     predictor.start_training (num_epochs=args.num_epochs, 
