@@ -137,7 +137,7 @@ def preprocess_relation_prediction (train_data_file,
                                     dev_labels_file,
                                     *args,
                                     **kwargs):
-    label_field = kwargs.get ("field_name", "valid_relation")
+    label_field = kwargs.get ("label_field", "valid_relation")
     train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
     train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")  
 
