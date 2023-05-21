@@ -16,4 +16,3 @@ python ../scripts/relation_prediction.py --task-name $TASK_NAME \
                                          --text-field $CONTEXT_FIELD \
                                          --num-epochs 15 \
                                          --num-hidden $NUM_HIDDEN
-done
