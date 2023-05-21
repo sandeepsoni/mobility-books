@@ -160,27 +160,10 @@ def readArgs ():
                          type=str, 
                          help="Column name that contains the entire text")
     
-    parser.add_argument ("--model-path", 
-                         required=True, 
-                         type=str, 
-                         help="Path to the file that will store the model")
-    
     parser.add_argument ("--models-dir", 
                          required=True, 
                          type=str, 
                          help="Directory in which to store the models")
-    
-    parser.add_argument ("--predictions-path", 
-                         required=False, 
-                         type=str, 
-                         default="", 
-                         help="Path to the file that will store the predictions")
-    
-    parser.add_argument ("--training-dynamics-path",
-                         required=False,
-                         type=str,
-                         default="",
-                         help="Path to the file that will store the training dynamics of file")
     
     parser.add_argument ("--results-dir",
                          required=False,
