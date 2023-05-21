@@ -192,7 +192,7 @@ class BERTRelationPrediction (nn.Module):
 					"f1": f1_score (groundtruth, predictions, average='micro'),
 					"epoch": epoch    
                 })
-            if verbose: logging.info (classification_report (groundtruth, predictions))
+            if verbose: logging.info (classification_report (groundtruth, predictions, target_names=self.labels))
             self.num_epochs += 1
 	
     def apply_book (self,

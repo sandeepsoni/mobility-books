@@ -87,6 +87,73 @@ def preprocess_spatial_relation_prediction (train_data_file,
     dev_df = dev_df.query ("spatial_relation.notnull()")
     return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
 
+def preprocess_temporal_span_relation_prediction (train_data_file,
+                                                  train_labels_file,
+                                                  dev_data_file,
+                                                  dev_labels_file,
+                                                  *args,
+                                                  **kwargs):
+    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
+    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
+    train_df = train_df.query ("temporal_span.notnull()")
+
+    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
+    dev_df = dev_df.query ("temporal_span.notnull()")
+    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df    
+
+def preprocess_narrative_tense_relation_prediction (train_data_file,
+                                                    train_labels_file,
+                                                    dev_data_file,
+                                                    dev_labels_file,
+                                                    *args,
+                                                    **kwargs):
+    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
+    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
+    train_df = train_df.query ("narrative_tense.notnull()")
+
+    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
+    dev_df = dev_df.query ("narrative_tense.notnull()")
+    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
+
+def preprocess_relation_prediction (train_data_file,
+                                    train_labels_file,
+                                    dev_data_file,
+                                    dev_labels_file,
+                                    *args,
+                                    **kwargs):
+    task_name = kwargs.get ("task_name", "validity")
+    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")  
+
+    # Merge the two dataframes
+    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
+    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
+    train_df = train_df.query (f"{task_name}.notnull()")
+
+    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+
+    # Merge the two dataframes
+    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
+    dev_df = dev_df.query (f"{task_name}.notnull()")
+    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df   
+
 
 def readArgs ():
     parser = argparse.ArgumentParser (description="Script to train and evaluate a spatial relation prediction model")
@@ -178,15 +245,25 @@ def readArgs ():
 
 def init_config ():
     config_options = {task: {} for task in TASKS}
-    config_options["validity"]["preproc_callback"] = preprocess_valid_relation_prediction
+    config_options["validity"]["preproc_callback"] = preprocess_relation_prediction
     config_options["validity"]["num_labels"] = len (VALID_LABELS)
     config_options["validity"]["label_space"] = VALID_LABELS
     config_options["validity"]["label_field"] = "valid_relation"
 
-    config_options["spatial"]["preproc_callback"] = preprocess_spatial_relation_prediction
+    config_options["spatial"]["preproc_callback"] = preprocess_relation_prediction
     config_options["spatial"]["num_labels"] = len (SPATIAL_RELATION_LABELS)
     config_options["spatial"]["label_space"] = SPATIAL_RELATION_LABELS
     config_options["spatial"]["label_field"] = "spatial_relation"
+
+    config_options["temporal_span"]["preproc_callback"] = preprocess_relation_prediction
+    config_options["temporal_span"]["num_labels"] = len (TEMPORAL_SPAN_LABELS)
+    config_options["temporal_span"]["label_space"] = TEMPORAL_SPAN_LABELS
+    config_options["temporal_span"]["label_field"] = "temporal_span"
+
+    config_options["narrative_tense"]["preproc_callback"] = preprocess_relation_prediction
+    config_options["narrative_tense"]["num_labels"] = len (NARRATIVE_TENSE_LABELS)
+    config_options["narrative_tense"]["label_space"] = NARRATIVE_TENSE_LABELS
+    config_options["narrative_tense"]["label_field"] = "narrative_tense"
 
     return config_options
 
@@ -215,8 +292,6 @@ def main (args):
                          preprocess=config_options[args.task_name]["preproc_callback"],
                          num_training_examples=args.num_training_examples)
     
-    #print (np.sum(["<char>" in item.split() for item in predictor.dev_df[args.text_field].values]))
-    #return
 	
     predictor.start_training (num_epochs=args.num_epochs, 
                               text_field=args.text_field,

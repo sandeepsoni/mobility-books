@@ -51,3 +51,13 @@ TASKS = [
     "temporal_span",
     "narrative_tense"
 ]
+
+TEMPORAL_SPAN_LABELS = [
+    "PUNCTUAL",
+    "HABITUAL"
+]
+
+NARRATIVE_TENSE_LABELS = [
+    "ONGOING",
+    "ALREADY HAPPENED"
+]
