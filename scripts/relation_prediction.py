@@ -23,6 +23,16 @@ logging.basicConfig (
     format='%(asctime)s %(message)s'
 )
 
+def read_data_from_file (filename, sep='\t'):
+    rows = list ()
+    with open (filename) as fin:
+        for line in fin:
+            parts = line.strip().split (sep)
+            rows.append (parts)
+    
+    df = pd.DataFrame (rows[1:], columns=rows[0])
+    return df
+
 def preprocess_spatial_relation_collapsed_prediction (annotations, *args, **kwargs):
     labels = kwargs.get ("labels", ALL_LABELS)
     full_df = annotations[kwargs.get ("window_size", 10)]
@@ -44,93 +54,6 @@ def preprocess_spatial_relation_collapsed_prediction (annotations, *args, **kwar
     logging.info (f"All records: {len (full_df)}; for training: {len (train_df)}, for testing: {len (test_df)}")
     return full_df, train_df, test_df
 
-def preprocess_valid_relation_prediction (train_data_file, 
-                                          train_labels_file,
-                                          dev_data_file,
-                                          dev_labels_file,
-                                          *args, 
-                                          **kwargs):
-    train_data = pd.read_csv (train_data_file, sep="\t", on_bad_lines="skip")
-    train_labels = pd.read_csv (train_labels_file, sep="\t", on_bad_lines="skip")
-
-    # Merge the two dataframes
-    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
-    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
-
-    dev_data = pd.read_csv (dev_data_file, sep="\t", on_bad_lines="skip")
-    dev_labels = pd.read_csv (dev_labels_file, sep="\t", on_bad_lines="skip")
-
-    # Merge the two dataframes
-    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
-
-    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
-
-def preprocess_spatial_relation_prediction (train_data_file,
-                                            train_labels_file,
-                                            dev_data_file,
-                                            dev_labels_file,
-                                            *args,
-                                            **kwargs):
-    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-
-    # Merge the two dataframes
-    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
-    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
-    train_df = train_df.query ("spatial_relation.notnull()")
-
-    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-
-    # Merge the two dataframes
-    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
-    dev_df = dev_df.query ("spatial_relation.notnull()")
-    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
-
-def preprocess_temporal_span_relation_prediction (train_data_file,
-                                                  train_labels_file,
-                                                  dev_data_file,
-                                                  dev_labels_file,
-                                                  *args,
-                                                  **kwargs):
-    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-
-    # Merge the two dataframes
-    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
-    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
-    train_df = train_df.query ("temporal_span.notnull()")
-
-    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-
-    # Merge the two dataframes
-    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
-    dev_df = dev_df.query ("temporal_span.notnull()")
-    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df    
-
-def preprocess_narrative_tense_relation_prediction (train_data_file,
-                                                    train_labels_file,
-                                                    dev_data_file,
-                                                    dev_labels_file,
-                                                    *args,
-                                                    **kwargs):
-    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-    train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-
-    # Merge the two dataframes
-    train_df = pd.merge (train_data, train_labels, how="inner", on="ID")
-    train_df = train_df.head (kwargs.get ("num_training_examples", 100))
-    train_df = train_df.query ("narrative_tense.notnull()")
-
-    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-    dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
-
-    # Merge the two dataframes
-    dev_df = pd.merge (dev_data, dev_labels, how="inner", on="ID")
-    dev_df = dev_df.query ("narrative_tense.notnull()")
-    return pd.concat ((train_df, dev_df), axis=1), train_df, dev_df
-
 def preprocess_relation_prediction (train_data_file,
                                     train_labels_file,
                                     dev_data_file,
@@ -138,7 +61,7 @@ def preprocess_relation_prediction (train_data_file,
                                     *args,
                                     **kwargs):
     label_field = kwargs.get ("label_field", "valid_relation")
-    train_data = pd.read_csv (train_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    train_data = read_data_from_file (train_data_file, sep=kwargs.get("sep", "\t"))
     train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")  
 
     # Merge the two dataframes
@@ -146,7 +69,7 @@ def preprocess_relation_prediction (train_data_file,
     train_df = train_df.head (kwargs.get ("num_training_examples", 100))
     train_df = train_df.query (f"{label_field}.notnull()")
 
-    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    dev_data = read_data_from_file (dev_data_file, sep=kwargs.get ("sep", "\t"))
     dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
 
     # Merge the two dataframes
