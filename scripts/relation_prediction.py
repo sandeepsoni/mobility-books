@@ -23,16 +23,6 @@ logging.basicConfig (
     format='%(asctime)s %(message)s'
 )
 
-def read_data_from_file (filename, sep='\t'):
-    rows = list ()
-    with open (filename) as fin:
-        for line in fin:
-            parts = line.strip().split (sep)
-            rows.append (parts)
-    
-    df = pd.DataFrame (rows[1:], columns=rows[0])
-    return df
-
 def preprocess_spatial_relation_collapsed_prediction (annotations, *args, **kwargs):
     labels = kwargs.get ("labels", ALL_LABELS)
     full_df = annotations[kwargs.get ("window_size", 10)]
@@ -61,7 +51,8 @@ def preprocess_relation_prediction (train_data_file,
                                     *args,
                                     **kwargs):
     label_field = kwargs.get ("label_field", "valid_relation")
-    train_data = read_data_from_file (train_data_file, sep=kwargs.get("sep", "\t"))
+    train_data = pd.read_csv (train_data_file, sep=kwargs.get("sep", "\t"), on_bad_lines="skip")
+    train_data = train_data.dropna()
     train_labels = pd.read_csv (train_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")  
 
     # Merge the two dataframes
@@ -69,7 +60,8 @@ def preprocess_relation_prediction (train_data_file,
     train_df = train_df.head (kwargs.get ("num_training_examples", 100))
     train_df = train_df.query (f"{label_field}.notnull()")
 
-    dev_data = read_data_from_file (dev_data_file, sep=kwargs.get ("sep", "\t"))
+    dev_data = pd.read_csv (dev_data_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
+    dev_data = dev_data.dropna()
     dev_labels = pd.read_csv (dev_labels_file, sep=kwargs.get ("sep", "\t"), on_bad_lines="skip")
 
     # Merge the two dataframes
