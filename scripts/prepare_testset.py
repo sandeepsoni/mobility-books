@@ -14,6 +14,7 @@ def readArgs ():
     return args
 
 def main (args):
+    os.makedirs (args.output_dir, exist_ok=True)
     df = pd.read_csv (os.path.join (args.collocations_dir, f"{args.book_id}.collocations"), sep="\t")
     output = list ()
     for i,row in tqdm (df.iterrows ()):
