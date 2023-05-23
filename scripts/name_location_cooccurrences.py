@@ -92,8 +92,6 @@ def main (args):
     df = get_entities_from_book (args.input_filename)
     persons = df[df["cat"] == "PER"]
     locations = df[df["cat"].isin (["GPE", "FAC", "LOC"])]
-    #persons = df[(df["cat"] == "PER") & (df["prop"].isin(["PROP", "PRON", "NOM"]))]
-    #locations = df[(df["cat"] == "GPE") & (df["prop"] == "PROP")]
     collocations = get_colocations (persons, locations, within_window=args.window_size)
     collocations["book_id"] = book_id
     collocations.to_csv (output_filename, sep="\t", header=True, index=False)
