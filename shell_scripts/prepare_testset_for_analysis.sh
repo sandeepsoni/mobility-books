@@ -7,5 +7,5 @@ parallel --jobs 16 \
          --collocations-dir ../data/v3 \
          --content-dir /data0/ssoni/booknlp/contemporary_litbank \
          --context-window-size 100 \
-         --output-dir ../data/experiments/testsets/contemporary_litbank/collocations
+         --output-dir ../data/experiments/testsets/contemporary_litbank/collocations \
          ::: $(cat ../data/experiments/testsets/contemporary_litbank/contemporary_litbank.ids)
