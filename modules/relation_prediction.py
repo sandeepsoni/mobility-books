@@ -203,17 +203,13 @@ class BERTRelationPrediction (nn.Module):
         self.eval()
         predictions = list ()
         with torch.no_grad ():
-            for i in range (len (book_df)):
+            for i in tqdm (range (len (book_df))):
                 text = book_df[text_field].iloc[i]
                 tokens = text.split (sep)
-                index, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
-                                                                                                   tokens, 
-                                                                                                   book_df.iloc[i]["persons_start"],
-                                                                                                   book_df.iloc[i]["persons_end"],
-                                                                                                   book_df.iloc[i]["locations_start"], 
-                                                                                                   book_df.iloc[i]["locations_end"])
+                stripped_tokens, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
+													                                                         tokens)
 
-                encoded_input = self.tokenizer (sep.join (tokens[0:index+1]), return_tensors="pt")
+                encoded_input = self.tokenizer (sep.join (stripped_tokens), return_tensors="pt")
                 if len(encoded_input['input_ids'][0]) > max_model_length:
                     continue
 
