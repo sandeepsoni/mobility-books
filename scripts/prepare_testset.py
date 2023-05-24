@@ -15,6 +15,10 @@ def readArgs ():
 
 def main (args):
     os.makedirs (args.output_dir, exist_ok=True)
+    collocations_file = os.path.join (args.output_dir, f"{args.book_id}.collocations")
+    examples_file = os.path.join (args.output_dir, f"{args.book_id}.examples")
+    if os.path.exists (collocations_file) and os.path.exists (examples_file):
+        return
     df = pd.read_csv (os.path.join (args.collocations_dir, f"{args.book_id}.collocations"), sep="\t")
     output = list ()
     for i,row in tqdm (df.iterrows ()):
@@ -96,10 +100,9 @@ def main (args):
     
     # add an ID column
     output_df.loc[:, "ID"] = output_df.index
-    
-    output_df.to_csv (os.path.join (args.output_dir, f"{args.book_id}.collocations"), sep="\t", index=False, header=True)
+    output_df.to_csv (collocations_file, sep="\t", index=False, header=True)
     output_df = output_df[['book_id', "ID", f'context_{args.context_window_size}']]
-    output_df.to_csv (os.path.join (args.output_dir, f"{args.book_id}.examples"), sep="\t", index=False, header=True)
+    output_df.to_csv (examples_file, sep="\t", index=False, header=True)
 
 if __name__ == "__main__":
     main (readArgs ())
