@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 def readArgs ():
     parser = argparse.ArgumentParser (description="Collects the inferred gender for named entities")
-    parser.add_argument ("--booknlp-dirs", required=True, type=str, nargs="+", help="directory path for booknlp data for PG books")
+    parser.add_argument ("--booknlp-dirs", required=True, type=str, nargs="+", help="Directories contain bookNLP data for individual titles")
     parser.add_argument ("--output-file", required=True, type=str, help="Flat file contains the inferred gender values")
     args = parser.parse_args ()
     return args
