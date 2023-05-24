@@ -49,10 +49,14 @@ def init_config ():
     
 def main (args):
     config_options = init_config()
+    
+    # set the device
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # load the validity checkpoint
     validity_checkpoint = torch.load (args.validity_model_path)
     validity_model = BERTRelationPrediction(n_labels=config_options["validity"]["num_labels"],
-                                            labels=config_options["validity"]["label_space"])
+                                            labels=config_options["validity"]["label_space"],
+                                            device=device)
     validity_model.load_state_dict (validity_checkpoint["model_state_dict"])
 
     # load the spatial model
