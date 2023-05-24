@@ -81,12 +81,10 @@ def main (args):
     narrative_tense_model.load_state_dict (narrative_tense_checkpoint["model_state_dict"])
 
     os.makedirs (args.output_dir, exist_ok=True)
-    
-    
         
     for book_id in args.book_ids:
         predictions_file = os.path.join (args.output_dir, f"{book_id}.predictions")
-        if os.path.exists (predictions_file) and os.path.getsize() > 0:
+        if os.path.exists (predictions_file) and os.path.getsize(predictions_file) > 0:
             continue
         book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.apply_book (book_df,
