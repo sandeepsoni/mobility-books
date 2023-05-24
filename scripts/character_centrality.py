@@ -11,6 +11,15 @@ def readArgs ():
     args = parser.parse_args ()
     return args
 
+def booknlp_entities_file_reader (filename, sep='\t'):
+    with open (filename) as fin:
+        for i, line in enumerate (fin):
+            parts = line.strip().split ()
+            if i == 0:
+                header = parts
+                continue
+            yield {col: parts[j] for j, col in enumerate (header)}
+
 def main (args):
     found = False
     for dirname in args.content_dirs:
@@ -21,14 +30,12 @@ def main (args):
 
     os.makedirs (args.output_dir, exist_ok=True)
     if found:
-        rows = list ()
-        df = pd.read_csv (filename, sep="\t")
-        df = df[df["cat"] == "PER"]
-        for i, row in df.iterrows ():
-            coref = row["COREF"]
-            cat = row["cat"]
-            rows.append (coref)
-        c = Counter (rows)
+        chars = list ()
+        for row in booknlp_entities_file_reader (filename):
+            if row["cat"] == "PER":
+                coref = row["COREF"]
+                chars.append (coref)
+        c = Counter (chars)
 
         with open (os.path.join (args.output_dir, f"{args.book_id}.per_frequency"), "w") as fout:
             fout.write (f"COREF\tNumTimes\n")
@@ -36,7 +43,7 @@ def main (args):
                 fout.write (f"{key}\t{num}\n")
 
     else:
-        print ("The book is not present")
+        print (f"The book {args.book_id} is not present")
 
 
 if __name__ == "__main__":
