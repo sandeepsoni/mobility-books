@@ -219,7 +219,7 @@ class BERTRelationPrediction (nn.Module):
                                        loc_wp_start, 
                                        loc_wp_end)
             
-                predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred)).item())
+                predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred, dim=0)).item())
         return predictions
 	    
     def save_model (self, model_path):

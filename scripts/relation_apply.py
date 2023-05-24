@@ -77,9 +77,9 @@ def main (args):
         book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.apply_book (book_df,
                                                           text_field=args.text_field)
-        predictions = [VALID_LABELS[prediction] for prediction in predictions]
-        book_df["binary_classifier_predictions"] = predictions
-        book_df = book_df[book_df["binary_classifier_predictions"] == "VALID"]
+        predictions = [VALID_LABELS[prediction] for prediction in validity_predictions]
+        book_df["validity"] = predictions
+        #book_df = book_df[book_df["binary_classifier_predictions"] == "VALID"]
         os.makedirs (args.output_dir, exist_ok=True)
         book_df.to_csv (os.path.join (args.output_dir, f"{book_id}.predictions"), sep="\t", header=True, index=False)
 
