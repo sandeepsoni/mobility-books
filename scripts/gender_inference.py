@@ -28,7 +28,7 @@ def read_inferred_genders_from_file (dirnames, cols=[]):
 
     for dirname in dirnames:
         for filename in tqdm (glob.glob (os.path.join (dirname, f"*.book"))):
-            book_id = ''.join(os.path.basename (filename).split (".")[0:-1])
+            book_id = '.'.join(os.path.basename (filename).split (".")[0:-1])
             with open (filename) as fin:
                 js = json.load (fin)
 
