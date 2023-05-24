@@ -17,9 +17,9 @@ logging.basicConfig (
 def readArgs ():
     parser = argparse.ArgumentParser (description="Apply a trained model to each book individually")
     parser.add_argument ("--validity-model-path", type=str, required=True, help="Path to the model file that contains the validity model")
-    #parser.add_argument ("--spatial-model-path", type=str, required=True, help="Path to the model file that contains the spatial model")
-    #parser.add_argument ("--temporal-span-model-path", type=str, required=True, help="Path to the model file that contains the temporal_span model")
-    #parser.add_argument ("--narrative-tense-model-path", type=str, required=True, help="Path to the model file that contains the narrative_tense model")
+    parser.add_argument ("--spatial-model-path", type=str, required=True, help="Path to the model file that contains the spatial model")
+    parser.add_argument ("--temporal-span-model-path", type=str, required=True, help="Path to the model file that contains the temporal_span model")
+    parser.add_argument ("--narrative-tense-model-path", type=str, required=True, help="Path to the model file that contains the narrative_tense model")
     parser.add_argument ("--book-ids", type=str, required=True, nargs="+", help="IDs of the book")
     parser.add_argument ("--collocations-dir", type=str, required=True, help="Path to the corpus containing collocations")
     parser.add_argument ("--output-dir", type=str, required=True, help="Path to the output file")
