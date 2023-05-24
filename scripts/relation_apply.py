@@ -94,7 +94,7 @@ def main (args):
         
         spatial_predictions = spatial_model.apply_book (book_df,
                                                         text_field=args.text_field)
-        spatial_predictions = [SPATIAL_LABELS[prediction] for prediction in spatial_predictions]
+        spatial_predictions = [SPATIAL_RELATION_LABELS[prediction] for prediction in spatial_predictions]
         book_df["spatial"] = spatial_predictions
 
         temporal_span_predictions = temporal_span_model.apply_book (book_df,
