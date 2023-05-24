@@ -79,8 +79,15 @@ def main (args):
                                                     labels=config_options["narrative_tense"]["label_space"],
                                                     device=device)
     narrative_tense_model.load_state_dict (narrative_tense_checkpoint["model_state_dict"])
+
+    os.makedirs (args.output_dir, exist_ok=True)
+    
+    
         
     for book_id in args.book_ids:
+        predictions_file = os.path.join (args.output_dir, f"{book_id}.predictions")
+        if os.path.exists (predictions_file) and os.path.getsize() > 0:
+            continue
         book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.apply_book (book_df,
                                                           text_field=args.text_field)
@@ -102,8 +109,7 @@ def main (args):
         narrative_tense_predictions = [NARRATIVE_TENSE_LABELS[prediction] for prediction in narrative_tense_predictions]
         book_df["narrative_tense"] = narrative_tense_predictions
         
-        os.makedirs (args.output_dir, exist_ok=True)
-        book_df.to_csv (os.path.join (args.output_dir, f"{book_id}.predictions"), sep="\t", header=True, index=False)
+        book_df.to_csv (predictions_file, sep="\t", header=True, index=False)
 
 if __name__ == "__main__":
     main (readArgs ())
