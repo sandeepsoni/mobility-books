@@ -23,6 +23,7 @@ def readArgs ():
     parser.add_argument ("--book-ids", type=str, required=True, nargs="+", help="IDs of the book")
     parser.add_argument ("--collocations-dir", type=str, required=True, help="Path to the corpus containing collocations")
     parser.add_argument ("--output-dir", type=str, required=True, help="Path to the output file")
+    parser.add_argument ("--text-field", type=str, required=False, default="context_100", help="Text field from the file")
 
     return parser.parse_args ()
 
@@ -75,7 +76,7 @@ def main (args):
     for book_id in args.book_ids:
         book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.apply_book (book_df,
-                                                             text_field=config_options["validity"]["label_field"])
+                                                          text_field=args.text_field)
         predictions = [VALID_LABELS[prediction] for prediction in predictions]
         book_df["binary_classifier_predictions"] = predictions
         book_df = book_df[book_df["binary_classifier_predictions"] == "VALID"]
