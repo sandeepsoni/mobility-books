@@ -1,7 +1,10 @@
-import os
+import os, sys
 import argparse
 import pandas as pd
 import torch
+
+if os.path.abspath ("../") not in sys.path:
+    sys.path.append (os.path.abspath ("../"))
 from modules.relation_prediction import BERTRelationPrediction
 from modules.relation_prediction_constants import * 
 import logging
