@@ -73,14 +73,14 @@ def main (args):
     #narrative_tense_model.load_state_dict (narrative_tense_checkpoint["model_state_dict"])
         
     for book_id in args.book_ids:
-        book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{args.book_id}.examples"), sep="\t")
+        book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.evaluate_book (book_df,
                                                              text_field=config_options["validity"]["label_field"])
         predictions = [VALID_LABELS[prediction] for prediction in predictions]
         book_df["binary_classifier_predictions"] = predictions
         book_df = book_df[book_df["binary_classifier_predictions"] == "VALID"]
         os.makedirs (args.output_dir, exist_ok=True)
-        book_df.to_csv (os.path.join (args.output_dir, f"{args.book_id}.predictions"), sep="\t", header=True, index=False)
+        book_df.to_csv (os.path.join (args.output_dir, f"{book_id}.predictions"), sep="\t", header=True, index=False)
 
 if __name__ == "__main__":
     main (readArgs ())
