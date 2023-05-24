@@ -85,7 +85,7 @@ def get_colocations (persons_df, locations_df, within_window=10):
 
 def main (args):
     os.makedirs (args.output_dir, exist_ok=True)
-    book_id = os.path.basename (args.input_filename).split (".")[0]
+    book_id = ".".join(os.path.basename (args.input_filename).split (".")[0:-1])
     output_filename = os.path.join (args.output_dir, f"{book_id}.collocations")
     if os.path.exists(output_filename) and os.path.getsize(output_filename) > 0:
         return
