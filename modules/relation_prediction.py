@@ -189,7 +189,8 @@ class BERTRelationPrediction (nn.Module):
                 self.groundtruth = groundtruth
                 self.scores.append ({
 					"accuracy": accuracy_score (groundtruth, predictions),
-					"f1": f1_score (groundtruth, predictions, average='micro'),
+					"f1_micro": f1_score (groundtruth, predictions, average='micro'),
+                    "f1_macro": f1_score (groundtruth, predictions, average='macro'),
 					"epoch": epoch    
                 })
             if verbose: logging.info (classification_report (groundtruth, predictions, target_names=self.labels))
