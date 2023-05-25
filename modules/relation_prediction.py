@@ -194,7 +194,7 @@ class BERTRelationPrediction (nn.Module):
                     "precision_micro": precision_score (groundtruth, predictions, average='micro'),
                     "precision_macro": precision_score (groundtruth, predictions, average='macro'),
                     "recall_micro": recall_score (groundtruth, predictions, average='micro'),
-                    "recall_macro": recall_score (groundtruth, predictions, average='macro')
+                    "recall_macro": recall_score (groundtruth, predictions, average='macro'),
 					"epoch": epoch    
                 })
             if verbose: logging.info (classification_report (groundtruth, predictions, target_names=self.labels))
