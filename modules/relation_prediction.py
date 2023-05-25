@@ -239,9 +239,12 @@ class BERTRelationPrediction (nn.Module):
 
     def save_training_dynamics (self, training_dynamics_path, sep="\t"):
           with open (training_dynamics_path, "w") as fout:
-                fout.write (sep.join (["Epoch", "F1", "Accuracy"]) + "\n")
+                fout.write (sep.join (["Epoch", "F1_Micro", "F1_Macro", "Accuracy"]) + "\n")
                 for item in self.scores:
-                    fout.write (sep.join ([f'{item["epoch"]}', f'{item["f1"]}', f'{item["accuracy"]}']) + "\n")         
+                    fout.write (sep.join ([f'{item["epoch"]}', 
+                                           f'{item["f1_micro"]}', 
+                                           f'{item["f1_macro"]}', 
+                                           f'{item["accuracy"]}']) + "\n")         
 
     def save (self, 
               model_path="",
