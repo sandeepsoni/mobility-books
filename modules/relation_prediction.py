@@ -211,6 +211,7 @@ class BERTRelationPrediction (nn.Module):
 
                 encoded_input = self.tokenizer (sep.join (stripped_tokens), return_tensors="pt")
                 if len(encoded_input['input_ids'][0]) > max_model_length:
+                    predictions.append (np.nan) # We'll ignore this example and mark its prediction as NaN
                     continue
 
                 y_pred = self.forward (encoded_input, 

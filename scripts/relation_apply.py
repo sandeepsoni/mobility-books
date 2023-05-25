@@ -2,6 +2,7 @@ import os, sys
 import argparse
 import pandas as pd
 import torch
+import math
 
 if os.path.abspath ("../") not in sys.path:
     sys.path.append (os.path.abspath ("../"))
@@ -91,22 +92,26 @@ def main (args):
         book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.apply_book (book_df,
                                                           text_field=args.text_field)
-        validity_predictions = [VALID_LABELS[prediction] for prediction in validity_predictions]
+        validity_predictions = [VALID_LABELS[prediction] if not math.isnan (prediction) else "N/A" 
+                                for prediction in validity_predictions]
         book_df["validity"] = validity_predictions
         
         spatial_predictions = spatial_model.apply_book (book_df,
                                                         text_field=args.text_field)
-        spatial_predictions = [SPATIAL_RELATION_LABELS[prediction] for prediction in spatial_predictions]
+        spatial_predictions = [SPATIAL_RELATION_LABELS[prediction] if not math.isnan (prediction) else "N/A" 
+                               for prediction in spatial_predictions]
         book_df["spatial"] = spatial_predictions
 
         temporal_span_predictions = temporal_span_model.apply_book (book_df,
                                                                     text_field=args.text_field)
-        temporal_span_predictions = [TEMPORAL_SPAN_LABELS[prediction] for prediction in temporal_span_predictions]
+        temporal_span_predictions = [TEMPORAL_SPAN_LABELS[prediction] if not math.isnan (prediction) else "N/A" 
+                                     for prediction in temporal_span_predictions]
         book_df["temporal_span"] = temporal_span_predictions
 
         narrative_tense_predictions = narrative_tense_model.apply_book (book_df,
                                                                         text_field=args.text_field)
-        narrative_tense_predictions = [NARRATIVE_TENSE_LABELS[prediction] for prediction in narrative_tense_predictions]
+        narrative_tense_predictions = [NARRATIVE_TENSE_LABELS[prediction] if not math.isnan (prediction) else "N/A" 
+                                       for prediction in narrative_tense_predictions]
         book_df["narrative_tense"] = narrative_tense_predictions
         
         book_df.to_csv (predictions_file, sep="\t", header=True, index=False)
