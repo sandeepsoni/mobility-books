@@ -9,7 +9,7 @@ import pickle
 from transformers import BertTokenizer, BertModel
 from transformers import AutoTokenizer, AutoModel, AutoModelForSequenceClassification
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, confusion_matrix, classification_report, accuracy_score
+from sklearn.metrics import f1_score, confusion_matrix, classification_report, accuracy_score, precision_score, recall_score
 from .relation_prediction_utils import wordpiece_boundaries, tokens2wordpieces
 from .feedforward import FeedForwardNet
 import logging
@@ -191,6 +191,10 @@ class BERTRelationPrediction (nn.Module):
 					"accuracy": accuracy_score (groundtruth, predictions),
 					"f1_micro": f1_score (groundtruth, predictions, average='micro'),
                     "f1_macro": f1_score (groundtruth, predictions, average='macro'),
+                    "precision_micro": precision_score (groundtruth, predictions, average='micro'),
+                    "precision_macro": precision_score (groundtruth, predictions, average='macro'),
+                    "recall_micro": recall_score (groundtruth, predictions, average='micro'),
+                    "recall_macro": recall_score (groundtruth, predictions, average='macro')
 					"epoch": epoch    
                 })
             if verbose: logging.info (classification_report (groundtruth, predictions, target_names=self.labels))
@@ -239,11 +243,22 @@ class BERTRelationPrediction (nn.Module):
 
     def save_training_dynamics (self, training_dynamics_path, sep="\t"):
           with open (training_dynamics_path, "w") as fout:
-                fout.write (sep.join (["Epoch", "F1_Micro", "F1_Macro", "Accuracy"]) + "\n")
+                fout.write (sep.join (["Epoch", 
+                                       "F1_Micro", 
+                                       "F1_Macro", 
+                                       "Precision_Micro", 
+                                       "Precision_Macro", 
+                                       "Recall_Micro", 
+                                       "Recall_Macro", 
+                                       "Accuracy"]) + "\n")
                 for item in self.scores:
                     fout.write (sep.join ([f'{item["epoch"]}', 
                                            f'{item["f1_micro"]}', 
-                                           f'{item["f1_macro"]}', 
+                                           f'{item["f1_macro"]}',
+                                           f'{item["precision_micro"]}', 
+                                           f'{item["precision_macro"]}',
+                                           f'{item["recall_micro"]}', 
+                                           f'{item["recall_macro"]}', 
                                            f'{item["accuracy"]}']) + "\n")         
 
     def save (self, 
