@@ -1,5 +1,7 @@
 # Mobility of characters in literature
-This project aims to ground characters in a story to places. It's organization is still a work in progress. If you end up using the code or data from this repository, please cite our paper.
+This project introduces a new task, that of grounding a character to a place in an excerpt from a book.
+
+It's organization is still a work in progress. If you end up using the code or data from this repository, please cite our paper.
 
 Directories
 ===========
@@ -13,4 +15,11 @@ Directories
 Citation
 ========
 
-Coming soon!
+[ArXiv](https://arxiv.org/abs/2305.17561)
+
+Contact
+=======
+
+sandeepsoni at berkeley dot edu
+
+
