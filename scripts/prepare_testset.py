@@ -4,7 +4,7 @@ import os, sys
 from tqdm import tqdm
 
 def readArgs ():
-    parser = argparse.ArgumentParser (description="Apply the trained model on a bunch of examples from unseen books")
+    parser = argparse.ArgumentParser (description="Create examples from unseen books")
     parser.add_argument ("--book-id", type=str, required=True, help="ID of the book")
     parser.add_argument ("--collocations-dir", type=str, required=True, help="Directory that contains collocations")
     parser.add_argument ("--content-dir", type=str, required=True, nargs="+", help="Path to the corpus containing the content of each book")

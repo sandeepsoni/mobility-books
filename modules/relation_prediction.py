@@ -200,6 +200,34 @@ class BERTRelationPrediction (nn.Module):
             if verbose: logging.info (classification_report (groundtruth, predictions, target_names=self.labels))
             self.num_epochs += 1
 	
+    def apply_on_test_file (self,
+                            df,
+                            text_field="context_100",
+                            max_model_length=512,
+                            sep=" "):
+        self.eval()
+        predictions = list ()
+        with torch.no_grad ():
+            for i in tqdm (range (len (df))):
+                text = df[text_field].iloc[i]
+                tokens = text.split (sep)
+                stripped_tokens, (per_wp_start, per_wp_end), (loc_wp_start, loc_wp_end) = tokens2wordpieces (self.tokenizer,
+													                                                         tokens)
+
+                encoded_input = self.tokenizer (sep.join (stripped_tokens), return_tensors="pt")
+                if len(encoded_input['input_ids'][0]) > max_model_length:
+                    predictions.append (np.nan) # We'll ignore this example and mark its prediction as NaN
+                    continue
+
+                y_pred = self.forward (encoded_input, 
+                                       per_wp_start, 
+                                       per_wp_end,
+                                       loc_wp_start, 
+                                       loc_wp_end)
+            
+                predictions.append (torch.argmax (torch.nn.functional.softmax (y_pred, dim=0)).item())
+        return predictions
+
     def apply_book (self,
 		            book_df,
 		            text_field="context_100",

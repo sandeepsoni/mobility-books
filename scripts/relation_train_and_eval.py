@@ -87,11 +87,6 @@ def init_config ():
     config_options["validity"]["label_space"] = VALID_LABELS
     config_options["validity"]["label_field"] = "Valid Relation"
 
-    config_options["spatial-collapsed"]["preproc_callback"] = preprocess_spatial_relation_collapsed_prediction
-    config_options["spatial-collapsed"]["num_labels"] = len (SPATIAL_RELATION_COLLAPSED_LABELS)
-    config_options["spatial-collapsed"]["label_space"] = SPATIAL_RELATION_COLLAPSED_LABELS
-    config_options["spatial-collapsed"]["label_field"] = "Spatial Relation Collapsed"
-
     return config_options
 
 def main (args):
