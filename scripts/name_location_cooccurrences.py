@@ -12,10 +12,6 @@ def readArgs ():
     args = parser.parse_args ()
     return args
 
-def list_files (dirname, of_type="*.tokens"):
-    for filename in glob.glob (os.path.join (dirname, of_type)):
-        yield filename 
-
 def get_entities_from_book (filename):
     df = pd.read_csv (filename, sep="\t", on_bad_lines='skip', engine="python")
     return df
