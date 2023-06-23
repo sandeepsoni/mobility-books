@@ -42,13 +42,12 @@ def create_json (book_id, coref_id, start_token, end_token, text, query, num_mat
 def main (args):
     # Read all the locations from the entities file
     all_locs = list ()
-    for filename in tqdm (glob.glob (os.path.join(args.booknlp_dir, "*.entities"))):
+    for filename in tqdm (glob.glob (os.path.join(args.booknlp_dir, "*.entities"))[0:100]):
         entities_df = get_entities_from_book (filename)
         book_id = os.path.basename (filename)[:-len(".entities")]
         entities_df["book_id"] = book_id
         locs_df = entities_df.query ('cat == @args.cat')
         all_locs.append (locs_df)
-        break
 
     all_locs = pd.concat (all_locs)
     all_locs["query_text"] = all_locs["text"].apply (lambda x: format_into_query (x))
