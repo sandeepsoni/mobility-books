@@ -22,7 +22,7 @@ def readArgs ():
     parser.add_argument ("--temporal-span-model-path", type=str, required=True, help="Path to the model file that contains the temporal_span model")
     parser.add_argument ("--narrative-tense-model-path", type=str, required=True, help="Path to the model file that contains the narrative_tense model")
     parser.add_argument ("--book-ids-file", type=str, required=True, help="IDs of the book in a file")
-    parser.add_argument ("--collocations-dir", type=str, required=True, help="Path to the corpus containing collocations")
+    parser.add_argument ("--examples-dir", type=str, required=True, help="Path to the corpus containing collocations")
     parser.add_argument ("--output-dir", type=str, required=True, help="Path to the output file")
     parser.add_argument ("--text-field", type=str, required=False, default="context_100", help="Text field from the file")
 
@@ -93,7 +93,7 @@ def main (args):
         if os.path.exists (predictions_file) and os.path.getsize(predictions_file) > 0:
             logging.info (f"{book_id} predictions present in {predictions_file}... done")
             continue
-        book_df = pd.read_csv (os.path.join (args.collocations_dir, f"{book_id}.examples"), sep="\t")
+        book_df = pd.read_csv (os.path.join (args.examples_dir, f"{book_id}.examples"), sep="\t")
         validity_predictions = validity_model.apply_book (book_df,
                                                           text_field=args.text_field)
         validity_predictions = [VALID_LABELS[prediction] if not math.isnan (prediction) else "N/A" 

@@ -10,5 +10,5 @@ python ../scripts/relation_apply.py --validity-model-path $VALIDITY_MODEL \
                                     --temporal-span-model-path $TEMPORAL_SPAN_MODEL \
                                     --narrative-tense-model-path $NARRATIVE_TENSE_MODEL \
                                     --book-ids-file ../data/experiments/testsets/conlit/conlit.ids \
-                                    --collocations-dir ../data/experiments/testsets/conlit/collocations \
+                                    --examples-dir ../data/experiments/testsets/conlit/examples \
                                     --output-dir ../data/experiments/testsets/conlit/predictions
