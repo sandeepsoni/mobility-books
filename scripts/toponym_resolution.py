@@ -19,6 +19,7 @@ def get_entities_from_book (filename):
 
 def main (args):
     # Read all the locations from the entities file
+    """
     all_locs = list ()
     for filename in tqdm (glob.glob (os.path.join(args.booknlp_dir, "*.entities"))):
         entities_df = get_entities_from_book (filename)
@@ -29,8 +30,10 @@ def main (args):
 
     all_locs = pd.concat (all_locs)
     print (len (all_locs))
+    """
     # Read all entries from the gazeteer
-
+    gaz = pd.read_csv (args.gazetteer_file, sep='\t', quoting=True, quotechar='"')
+    print (len (gaz))
     # Output a JSON files
 
 if __name__ == "__main__":
