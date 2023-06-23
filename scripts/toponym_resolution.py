@@ -25,7 +25,6 @@ def main (args):
         book_id = os.path.basename (filename)[:-len(".entities")]
         entities_df["book_id"] = book_id
         locs_df = entities_df.query ('cat == @args.cat')
-        print (len (locs_df))
         all_locs.append (locs_df)
 
     all_locs = pd.concat (all_locs)
