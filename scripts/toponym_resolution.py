@@ -20,7 +20,8 @@ def get_entities_from_book (filename):
     return df
 
 def format_into_query (toponym_candidate):
-    # remove accents
+    if type(toponym_candidate) is not str:
+        return toponym_candidate # nothing to be done for non-string toponyms
     toponym_candidate = unidecode.unidecode(toponym_candidate) #remove accents
     toponym_candidate = toponym_candidate.lower() # lowercase
     toponym_candidate = re.sub('[^0-9a-zA-Z]+', ' ', toponym_candidate) # replace non-alphanumerics by space
