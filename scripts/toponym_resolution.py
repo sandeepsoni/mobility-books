@@ -27,7 +27,7 @@ def format_into_query (toponym_candidate):
     toponym_candidate = ' '.join(toponym_candidate.split()) # replace multiple whitespaces with a single whitespace
     return toponym_candidate
 
-def create_json (book_id, coref_id, start_token, end_token, text, query, num_matches):
+def create_json (book_id, coref_id, start_token, end_token, text, query, place_id, country_short, admin_1_short, lat, lon):
     js = {}
     js["book_id"] = book_id
     js["coref_id"] = coref_id
@@ -35,7 +35,11 @@ def create_json (book_id, coref_id, start_token, end_token, text, query, num_mat
     js["end_token"] = end_token
     js["text"] = text
     js["query"] = query
-    js["num_matches"] = num_matches
+    js["place_id"] = place_id
+    js["country_short"] = country_short
+    js["admin_1_short"] = admin_1_short
+    js["lat"] = lat
+    js["lon"] = lon
     return js
 
 
@@ -55,16 +59,32 @@ def main (args):
     # Read all entries from the gazeteer
     gaz = pd.read_csv (args.gazetteer_file, sep='\t', quoting=True, quotechar='"')
     gaz = gaz.query ('lang == "en"')
-    gaz = gaz[["text_string", "place_id", "lat", "lon"]]
-    print (len (gaz))
+    gaz = gaz[["text_string", "place_id", "country_short", "admin_1_short", "lat", "lon"]]
+    # Convert this dataframe into a dictionary
+    dictionary = {}
+    for _,row in gaz.iterrows():
+        key = row["text_string"]
+        value = {"place_id": row["place_id"], "country_short": row["country_short"], "admin_1_short": row["admin_1_short"], "lat": row["lat"], "lon": row["lon"]}
+        dictionary[key] = value
+
     # Output a JSON files
     with open (args.output_json_file, "w") as fout:
-        for i, loc in all_locs.iterrows ():
+        for i, loc in tqdm (all_locs.iterrows ()):
             q = loc["query_text"]
-            df = gaz.query ('text_string == @q')
-            num_matches = len (df)
-            js = create_json (loc["book_id"], loc["COREF"], loc["start_token"], loc["end_token"], loc["text"], q, num_matches)
-            fout.write (f"{json.dumps (js)}\n")
+            if q in dictionary:
+                val = dictionary[q]
+                js = create_json (loc["book_id"], 
+                                  loc["COREF"], 
+                                  loc["start_token"], 
+                                  loc["end_token"], 
+                                  loc["text"], 
+                                  q, 
+                                  val["place_id"],
+                                  val["country_short"],
+                                  val["admin_1_short"],
+                                  val["lat"],
+                                  val["lon"])
+                fout.write (f"{json.dumps (js)}\n")
 
 
 if __name__ == "__main__":
