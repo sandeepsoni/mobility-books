@@ -1,6 +1,7 @@
 import pandas as pd
 import argparse
 import os, glob
+from tqdm import tqdm
 import json
 
 def readArgs ():
@@ -19,7 +20,7 @@ def get_entities_from_book (filename):
 def main (args):
     # Read all the locations from the entities file
     all_locs = list ()
-    for filename in glob.glob (os.path.join(args.booknlp_dir, "*.entities")):
+    for filename in tqdm (glob.glob (os.path.join(args.booknlp_dir, "*.entities"))):
         entities_df = get_entities_from_book (filename)
         book_id = os.path.basename (filename)[:-len(".entities")]
         entities_df["book_id"] = book_id
