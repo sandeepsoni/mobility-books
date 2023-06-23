@@ -21,7 +21,7 @@ def readArgs ():
     parser.add_argument ("--spatial-model-path", type=str, required=True, help="Path to the model file that contains the spatial model")
     parser.add_argument ("--temporal-span-model-path", type=str, required=True, help="Path to the model file that contains the temporal_span model")
     parser.add_argument ("--narrative-tense-model-path", type=str, required=True, help="Path to the model file that contains the narrative_tense model")
-    parser.add_argument ("--book-ids", type=str, required=True, nargs="+", help="IDs of the book")
+    parser.add_argument ("--book-ids-file", type=str, required=True, help="IDs of the book in a file")
     parser.add_argument ("--collocations-dir", type=str, required=True, help="Path to the corpus containing collocations")
     parser.add_argument ("--output-dir", type=str, required=True, help="Path to the output file")
     parser.add_argument ("--text-field", type=str, required=False, default="context_100", help="Text field from the file")
@@ -82,8 +82,12 @@ def main (args):
     narrative_tense_model.load_state_dict (narrative_tense_checkpoint["model_state_dict"])
 
     os.makedirs (args.output_dir, exist_ok=True)
+
+    # load the book_ids from file
+    with open (args.book_ids_file) as fin:
+        book_ids = [line.strip() for line in fin]
         
-    for book_id in args.book_ids:
+    for book_id in book_ids:
         predictions_file = os.path.join (args.output_dir, f"{book_id}.predictions")
         logging.info (f"Processing {book_id} ...")
         if os.path.exists (predictions_file) and os.path.getsize(predictions_file) > 0:

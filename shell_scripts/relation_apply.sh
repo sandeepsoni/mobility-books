@@ -1,9 +1,14 @@
 #! /bin/bash
 
-python ../scripts/relation_apply.py --validity-model-path ../data/models/bert_models/context_100/0/1754/validity.pt \
-                                    --spatial-model-path ../data/models/bert_models/context_100/0/1754/spatial.pt \
-                                    --temporal-span-model-path ../data/models/bert_models/context_100/0/1754/temporal_span.pt \
-                                    --narrative-tense-model-path ../data/models/bert_models/context_100/0/1754/narrative_tense.pt \
-                                    --book-ids $(cat $1) \
-                                    --collocations-dir ../data/experiments/testsets/contemporary_litbank/collocations \
-                                    --output-dir ../data/experiments/testsets/contemporary_litbank/predictions
+VALIDITY_MODEL=$1
+SPATIAL_MODEL=$2
+TEMPORAL_SPAN_MODEL=$3
+NARRATIVE_TENSE_MODEL=$4
+
+python ../scripts/relation_apply.py --validity-model-path $VALIDITY_MODEL \
+                                    --spatial-model-path $SPATIAL_MODEL \
+                                    --temporal-span-model-path $TEMPORAL_SPAN_MODEL \
+                                    --narrative-tense-model-path $NARRATIVE_TENSE_MODEL \
+                                    --book-ids-file ../data/experiments/testsets/conlit/conlit.ids \
+                                    --collocations-dir ../data/experiments/testsets/conlit/collocations \
+                                    --output-dir ../data/experiments/testsets/conlit/predictions
