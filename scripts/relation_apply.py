@@ -85,7 +85,7 @@ def main (args):
 
     # load the book_ids from file
     with open (args.book_ids_file) as fin:
-        book_ids = [line.strip() for line in fin]
+        book_ids = [line.strip('\n') for line in fin]
         
     for book_id in book_ids:
         predictions_file = os.path.join (args.output_dir, f"{book_id}.predictions")
