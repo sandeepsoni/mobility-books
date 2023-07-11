@@ -15,8 +15,9 @@ Directories
 Resources
 ========
 
-- [ArXiv](https://arxiv.org/abs/2305.17561)
-- [Annotation guidelines](https://docs.google.com/document/d/e/2PACX-1vSbMOWfS7gZhGcfQTSdulFsZRxbsrhxFti2jh3Mxc-CkF8LV3qIDWp9VwXZ1vk6svHfu_sEF_F2mV3R/pub)
+* [ArXiv](https://arxiv.org/abs/2305.17561)
+
+* [Annotation guidelines](https://docs.google.com/document/d/e/2PACX-1vSbMOWfS7gZhGcfQTSdulFsZRxbsrhxFti2jh3Mxc-CkF8LV3qIDWp9VwXZ1vk6svHfu_sEF_F2mV3R/pub)
 
 Citation
 ========
