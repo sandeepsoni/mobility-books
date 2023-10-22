@@ -37,13 +37,14 @@ def read_inferred_genders_from_file (dirnames, cols=[]):
                     rows.append ([book_id, \
                                   char["id"], \
                                   char["g"]["argmax"], \
-                                  char["g"]["max"]])
+                                  char["g"]["max"], \
+                                  char["count"]])
                     
     df = pd.DataFrame (rows[1:], columns=rows[0])
     return df
 
 def main (args):
-    df = read_inferred_genders_from_file (args.booknlp_dirs, cols=["book_id", "char_id", "inf_gender", "prob"])
+    df = read_inferred_genders_from_file (args.booknlp_dirs, cols=["book_id", "char_id", "inf_gender", "prob", "char_count"])
     df.to_csv (args.output_file, sep="\t", header=True, index=False)
 
 if __name__ == "__main__":
