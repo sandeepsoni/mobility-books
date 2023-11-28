@@ -1,0 +1,23 @@
+Prompt:
+
+You will find below a passage(between the <passage> and </passage> tags). Each passage contains exactly one character (between the <char> and </char> tags) and one place (between the <place> and </place> tags).
+
+<novel> {{TEXT}} </novel>
+
+Now, you’ll answer the following questions about the character and place from the passage:
+
+Q1. What is the character in the passage? Your answer should be the text that lies within the <char> and </char> tags but it should not contain the <place> or </place> tags. If the text cannot be extracted, the answer should be “no_character”. The response should be embedded inside <Q1> and </Q1> tags.
+
+Q2. What is the place in the passage? Your answer should be the text that lies within the <place> and </place> tags but it should not contain the <char> or </char> tags. If the text cannot be extracted, the answer should be “no_place”. The response should be embedded inside <Q2> and </Q2> tags.
+
+Q3. Is the character valid? Your answer should be “valid” if the character is a single person indicated by a proper name (e.g., Tom Sawyer) or a common entity (e.g., the boy), or a set of people either by proper name (e.g., the Ashburnhams), or a set of people referred by common entities (e.g., her daughters). Pronoun references to entities of this type (e.g., he, she, they, it) should also be considered “valid”. If the character is too generic such that it refers to a class of entity and not a specific one (e.g., rich people, a private establishment, etc.) or if the textual span of the character contains tokens not strictly referring to the character, then the answer should be “invalid”. For any cases that don’t fit the definition of valid character, the answer should be “invalid”. The response should be embedded inside <Q3> and </Q3> tags.
+
+Q4. Is the place valid? Your answer should be “valid” if the place is either a facility i.e. a man-made structure (e.g., building, bridge, garden, parking garage), or a geopolitical entity that could be real (e.g., New York, England, etc) or imaginary (e.g. the city), or geologically designated areas (e.g., the river), or names of regions (e.g., the midwest), or names of planets (e.g. Mars). Adverbial references (e.g., here, there, etc) should also be considered “valid”. If the place is too generic such that it refers to a non-specific entity (e.g., our world, sea, etc) or if the textual span of the place contains tokens not strictly referring to the place, then the answer should be “invalid”. For any cases that don’t fit the definition of valid place, the answer should be “invalid”. The response should be embedded inside <Q4> and </Q4> tags.
+
+Q5. What is the spatial relationship between the character and the place? The response should be “N/A” if the character or the place is “invalid”; “IN” if the character is contained by the spatial boundaries of the place; “NEAR” if the character is in close proximity of the place but not contained in it; “THRU” if the character is moving through the place to reach somewhere else; “FROM” if the character was last present at the place but has moved away from it; “TO” if the character is moving towards the place and there is evidence they certainly reach the place in the immediate future; and “NO REL” if no relationship can be determined between the place and character, or if the relationship is speculative, or the character is definitely not in the place, or if there is uncertainty expressed in the text about the relationship, or if the relationship does not fit any of the previously mentioned categories. The response should be embedded inside <Q5> and </Q5> tags.
+
+Q6. What is the temporal span of the spatial relationship between the character and the place? The response should be “N/A” if the spatial relationship is “N/A” or “NO REL”; “PUNCTUAL” if the relationship is short lived, instantaneous and occurs a single time; and “HABITUAL” if the relationship is long-lasting, recurring, or seasonal. The response should be embedded inside <Q6> and </Q6> tags.
+
+Q7. What is the narrative tense in which the spatial relationship between the character and the place? The response should be “N/A” if the spatial relationship is “N/A” or “NO REL”; “ONGOING” if the relationship is deemed to occur in the same narrative time frame as the rest of the passage; “ALREADY HAPPENED” if the relationship is deemed to occur in the past relative the narrative time frame of the rest of the passage. The response should be embedded inside <Q7> and </Q7> tags.
+
+Your overall response should be a response to each question on a separate line.
